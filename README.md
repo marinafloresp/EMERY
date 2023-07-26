@@ -28,4 +28,4 @@ To run the app, follow the following steps:
  
 ***3. Run the app***
 
- From the "app" directory, run in the command line: - sh runApp.sh
+ From the "app" directory, run in the command line: `$ sh runApp.sh`
