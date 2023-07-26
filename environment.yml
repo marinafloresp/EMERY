@@ -1,0 +1,35 @@
+name: pyBasket
+channels:
+  - defaults
+dependencies:
+  - python==3.9
+  - numpy==1.23
+  - pandas
+  - scipy
+  - matplotlib
+  - seaborn
+  - scikit-learn
+  - loguru
+  - jupyterlab
+  - ipywidgets
+  - tqdm
+  - flake8
+  - autopep8
+  - pytest
+  - pytest-cov
+  - statsmodels
+  - pip
+  - streamlit
+  - mpld3
+  - shap
+  - lime
+  - PyALE
+  - altair
+  - pip:
+    - pymc
+    - arviz
+    - graphviz
+    - twine
+    - build
+    - mkdocs
+    - mkdocstrings
