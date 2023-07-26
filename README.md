@@ -15,7 +15,17 @@ To run the app, follow the following steps:
 2. This file is uploaded in the app.
    
 ***2. Set up the virtual environment***
-   
+
+#### Manage dependencies using Pipenv
+   1. Install pipenv (https://pipenv.readthedocs.io).
+   2. In the cloned Github repo, run `$ pipenv install`.
+   3. Enter virtual environment using `$ pipenv shell`.
+
+#### Manage dependencies using Anaconda Python:
+   1. Install Anaconda Python (https://www.anaconda.com/products/individual).
+   2. In the cloned Github repo, run `$ conda env create --file environment.yml`.
+   3. Enter virtual environment using `$ conda activate pyBasket`.
+ 
 ***3. Run the app***
 
  From the "app" directory, run in the command line: - sh runApp.sh
