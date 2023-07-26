@@ -11,7 +11,7 @@ import pandas as pd
 import arviz as az
 from common import savePlot,saveTable,alt_ver_barplot,alt_scatterplot,alt_boxplot, ecdf,alt_line_chart
 
-genes_path = os.path.join('..', 'pyBasket/Data', 'Entrez_to_Ensg99.mapping_table.tsv')
+genes_path = os.path.join('..', 'Entrez_to_Ensg99.mapping_table.tsv')
 
 def readPickle(pick_file):
     try:
