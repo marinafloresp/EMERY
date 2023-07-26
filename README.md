@@ -12,8 +12,10 @@ To run the app, follow the following steps:
 
 ***1. Download the required file(s):***
 1. Download a file with pyBasket model results from the "data" folder: https://gla-my.sharepoint.com/:f:/g/personal/ronan_daly_glasgow_ac_uk/Eod_I6-9hDtCgJ1CmKdBJCAB1LafkJ1UK3-Opp7UdQp1_Q?e=5SehkI
-2. This file 
+2. This file is uploaded in the app.
+   
 ***2. Set up the virtual environment***
+   
 ***3. Run the app***
 
- From the "app" directory, run in the command line: sh runApp.sh
+ From the "app" directory, run in the command line: - sh runApp.sh
