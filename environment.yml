@@ -1,4 +1,4 @@
-name: pyBasket
+name: pyBasketApp
 channels:
   - defaults
 dependencies:
