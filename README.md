@@ -19,7 +19,7 @@ To run the app, follow the following steps:
 #### Install dependencies using Pipenv and activate virtual environment
    1. Install pipenv: https://pipenv.readthedocs.io)
    2. Clone the repository in the desired location of your own machine: git clone 'clone link repository'
-   3. Run `$ pipenv install`. (If this doesn't work, use first: `$ sudo -H pip install -U pipenv`
+   3. In the cloned directory, run `$ pipenv install`. (If this doesn't work, use first: `$ sudo -H pip install -U pipenv`
    4. Enter virtual environment using `$ pipenv shell`.
 
 #### Manage dependencies using Anaconda Python:
