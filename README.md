@@ -7,11 +7,9 @@ This is the repository for the pyBasket app developed as part of my MSc Bioinfor
 
 **Steps to use the pyBasket app**
 
-To run the app, follow the following steps:
-
 ***1. Download the required file(s):***
 1. Download a file with pyBasket model results from the "data" folder [here](https://gla-my.sharepoint.com/:f:/g/personal/ronan_daly_glasgow_ac_uk/Eod_I6-9hDtCgJ1CmKdBJCAB1LafkJ1UK3-Opp7UdQp1_Q?e=5SehkI)
-2. This file is uploaded in the app.
+2. This file would be uploaded in the app.
    
 ***2. Set up the virtual environment***
 
@@ -23,9 +21,9 @@ To run the app, follow the following steps:
 
 #### Manage dependencies using Anaconda Python:
    1. Install Anaconda Python (https://www.anaconda.com/products/individual).
-   2. In the cloned Github repo, run `$ conda env create --file environment.yml`.
+   2. In the cloned Github repository, run `$ conda env create --file environment.yml`.
    3. Enter virtual environment using `$ conda activate pyBasketApp`.
  
 ***3. Run the app***
 
- From the "app" directory, run in the command line: `$ sh runApp.sh`
+ Move to the "app" directory and from the command line run: `$ sh runApp.sh`
