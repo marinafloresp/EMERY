@@ -3,7 +3,7 @@ channels:
   - defaults
 dependencies:
   - python==3.9
-  - numpy==1.23
+  - numpy<1.24
   - pandas
   - scipy
   - matplotlib
@@ -22,8 +22,6 @@ dependencies:
   - streamlit
   - mpld3
   - shap
-  - lime
-  - PyALE
   - altair
   - pip:
     - pymc
