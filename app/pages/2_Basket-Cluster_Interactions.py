@@ -48,8 +48,8 @@ if "data" in st.session_state:
                 saveTable(num_samples, "NumSamplesHM")
                 st.dataframe(num_samples, use_container_width=True)
             else:
-                HM_NoS = heatmap.heatmap_interaction(num_samples,"Number of samples per interaction"
-                                                         , min_num, int(cluster), basket)
+                HM_NoS = heatmap.heatmap_interaction(num_samples,num_samples,"Number of samples per interaction"
+                                                         ,min_num, int(cluster), basket)
                 savePlot_plt(HM_NoS, str(cluster) + "_" + basket)
                 st.pyplot(HM_NoS)
                 st.caption("The x-axis shows the levels of clusters. The y-axis shows the levels of baskets/tissues. The colour scale represents "
