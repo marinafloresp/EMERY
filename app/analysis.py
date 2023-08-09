@@ -212,7 +212,7 @@ class heatMap(Analysis):
 
     #Function to show interactions heatmap with the chosen information, mark the selected basket-cluster interaction and filter interactions with
     #num_Sum number of samples
-    def heatmap_interaction(self, df,title, num_Sum, x_highlight=None, y_highlight=None):
+    def heatmap_interaction(self, df,mark_num,title, num_Sum, x_highlight=None, y_highlight=None):
         x_highlight = self.clusters_names.index(x_highlight)
         y_highlight = self.baskets_names.index(y_highlight)
         fig = plt.figure(figsize=(10, 10))
@@ -222,7 +222,7 @@ class heatMap(Analysis):
         plt.ylabel('Baskets')
         plt.yticks(fontsize=8)
         for i, c in enumerate(df):
-            for j, v in enumerate(df[c]):
+            for j, v in enumerate(mark_num[c]):
                 if v >= num_Sum:
                     ax.text(i + 0.5, j + 0.5, '★', color='gold', size=20, ha='center', va='center')
         if x_highlight is not None and y_highlight is not None:

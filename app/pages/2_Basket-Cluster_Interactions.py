@@ -36,23 +36,22 @@ if "data" in st.session_state:
         #Option to mark interactions that have a minimum number of samples
         min_num = st.slider('Mark interactions with a minimum number of samples', 0, 70)
         st.info("\:star: : basket+cluster interactions with at least {} samples.\n"
-
                 "\:large_red_square: : selected basket+cluster interaction.\n".format(min_num))
         st.write("")
+        num_samples = heatmap.heatmapNum()
         if heatmap_info == 'Number of samples':
             st.write("#### Number of samples per basket*cluster interaction")
             st.write("Explore the number of samples in each basket and cluster combination.")
             #Option to show data in a table
             RawD = st.checkbox("Show raw data", key="raw-data-S")
-            num_samples = heatmap.heatmapNum()
             if RawD:
                 saveTable(num_samples, "NumSamplesHM")
                 st.dataframe(num_samples, use_container_width=True)
             else:
-                fig = heatmap.heatmap_interaction(num_samples,"Number of samples per interaction"
+                HM_NoS = heatmap.heatmap_interaction(num_samples,"Number of samples per interaction"
                                                          , min_num, int(cluster), basket)
-                savePlot_plt(fig, str(cluster) + "_" + basket)
-                st.pyplot(fig)
+                savePlot_plt(HM_NoS, str(cluster) + "_" + basket)
+                st.pyplot(HM_NoS)
                 st.caption("The x-axis shows the levels of clusters. The y-axis shows the levels of baskets/tissues. The colour scale represents "
                            "the number of samples.")
         elif heatmap_info == 'Number of responsive samples':
@@ -66,14 +65,14 @@ if "data" in st.session_state:
                 saveTable(response_df, "responseHM")
                 st.dataframe(response_df, use_container_width=True)
             else:
-                HM_response = heatmap.heatmap_interaction(response_df,"Responsive samples per interaction", min_num,
+                HM_response = heatmap.heatmap_interaction(response_df,num_samples,"Responsive samples per interaction", min_num,
                                                           int(cluster), basket)
                 savePlot_plt(HM_response, str(cluster) + "_" + basket)
                 st.pyplot(HM_response)
                 st.caption(
                     "The x-axis shows the levels of clusters. The y-axis shows the levels of baskets/tissues. The colour scale represents "
                     "the number of samples that are responsive to the drug.")
-        else:
+        elif heatmap_info == "Inferred response":
             st.write("#### Inferred response probability per basket*cluster interaction.")
             st.write(
                 "Explore the inferred response probability of each tissue/basket calculated by the HBM based on observed responses.")
@@ -84,7 +83,7 @@ if "data" in st.session_state:
                 saveTable(inferred_df,"inferredHM")
                 st.dataframe(inferred_df, use_container_width=True)
             else:
-                HM_inferred = heatmap.heatmap_interaction(inferred_df,"Inferred basket*cluster interaction", min_num,
+                HM_inferred = heatmap.heatmap_interaction(inferred_df,num_samples,"Inferred basket*cluster interaction", min_num,
                                                           int(cluster), basket)
                 savePlot_plt(HM_inferred, "inferred_heatmap")
                 st.pyplot(HM_inferred)
