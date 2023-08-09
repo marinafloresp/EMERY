@@ -125,7 +125,7 @@ if "data" in st.session_state:
                 st.caption("90% credible interval shown by default")
                 # Option to show data in a table
                 RawD_ecdf = st.checkbox("Show raw data", key="raw-data-ecdf")
-                ecdf_interaction(basket, cluster, RawD_ecdf, cred_inter)
+                ecdf_interaction(data,basket, cluster, RawD_ecdf, cred_inter)
                 st.subheader("Transcriptional expression")
                 st.write("The heatmap below shows the expression of transcripts across the samples included in the chosen basket*cluster interaction.")
                 # Option to show data in a table
