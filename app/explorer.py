@@ -4,7 +4,7 @@ import streamlit as st
 import pandas as pd
 from common import saveTable,alt_ver_barplot,alt_scatterplot,alt_boxplot, ecdf,alt_line_chart
 
-genes_path = os.path.join('..', 'pyBasket/Data', 'Entrez_to_Ensg99.mapping_table.tsv')
+genes_path = os.path.join('..', 'Entrez_to_Ensg99.mapping_table.tsv')
 
 """
 Class: Data: creates an object with the results data contained in the uploaded pickle file
