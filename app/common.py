@@ -218,8 +218,10 @@ def ecdf_interaction(data,basket,cluster,RawD, cred_inter):
             st.caption("The x-axis represents the probabilities points. The y-axis represents the proportion or fraction of data points that are less than or equal to a given value.")
     except:
         st.warning("Please select a smaller interval.")
+
 #Function to find the set of samples based on a specified subgroup
 def findSubgroup(option,feature):
+    data = st.session_state["data"]
     transcripts= data.expr_df_selected
     sub_patients = data.patient_df[data.patient_df[feature] == option]
     indexes = list(sub_patients.index.values)
