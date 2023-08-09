@@ -183,19 +183,22 @@ class Data():
     #Displays ECDF results for a chosen cluster or basket in a plot or table (if RawD is true)
     def ecdf_indiv(self, feature, choice, index, RawD,cred_inter):
         intervals = np.array([100-cred_inter-5, 50, cred_inter+5])
-        if feature == 'baskets':
-            basket_data = self.stacked_posterior.basket_p[index]
-            pct, pct_val = ecdf(basket_data,intervals)
-            title = 'Basket ' + choice
-        elif feature == "clusters":
-            cluster_data = self.stacked_posterior.cluster_p[index]
-            pct, pct_val = ecdf(cluster_data,intervals)
-            title = 'Cluster '+ str(choice)
-        st.write("""##### {}th, 50th and {}th Percentile values are""".format(intervals[0],intervals[2]) + ": {0:.2f}, {1:.2f} and {2:.2f}".format(*pct_val['x']))
-        if RawD:
-            saveTable(pct, "raw-ecdf")
-            st.dataframe(pct, use_container_width=True)
-        else:
-            alt_line_chart(pct,pct_val, 'Probability', 'Percent', 'Probability', 'Percent', "Cumulative distribution for "+title,"ecdf")
-            st.caption(
-                "The x-axis represents the probabilities points. The y-axis represents the proportion or fraction of data points that are less than or equal to a given value.")
+        try:
+            if feature == 'baskets':
+                basket_data = self.stacked_posterior.basket_p[index]
+                pct, pct_val = ecdf(basket_data,intervals)
+                title = 'Basket ' + choice
+            elif feature == "clusters":
+                cluster_data = self.stacked_posterior.cluster_p[index]
+                pct, pct_val = ecdf(cluster_data,intervals)
+                title = 'Cluster '+ str(choice)
+            st.write("""##### {}th, 50th and {}th Percentile values are""".format(intervals[0],intervals[2]) + ": {0:.2f}, {1:.2f} and {2:.2f}".format(*pct_val['x']))
+            if RawD:
+                saveTable(pct, "raw-ecdf")
+                st.dataframe(pct, use_container_width=True)
+            else:
+                alt_line_chart(pct,pct_val, 'Probability', 'Percent', 'Probability', 'Percent', "Cumulative distribution for "+title,"ecdf")
+                st.caption(
+                    "The x-axis represents the probabilities points. The y-axis represents the proportion or fraction of data points that are less than or equal to a given value.")
+        except:
+            st.warning("Please try a smaller credible interval.")
