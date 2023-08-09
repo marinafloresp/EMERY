@@ -8,7 +8,8 @@ This is the repository for EMERY, a graphic-user interface developed for the pyB
 **Steps to use EMERY**
 
 ***1. Download the required file(s):***
-1.Download the necessary pyBasket pipeline results saved in a pickle format from the [OneDrive folder](https://gla-my.sharepoint.com/:f:/g/personal/ronan_daly_glasgow_ac_uk/Eod_I6-9hDtCgJ1CmKdBJCAB66sciwg58zlxDHD2fgtsMw?e=0MA2gb).
+
+Download the necessary pyBasket pipeline results saved in a pickle format from the [OneDrive folder](https://gla-my.sharepoint.com/:f:/g/personal/ronan_daly_glasgow_ac_uk/Eod_I6-9hDtCgJ1CmKdBJCAB66sciwg58zlxDHD2fgtsMw?e=0MA2gb).
 
 ***2. Set up the virtual environment***
 
