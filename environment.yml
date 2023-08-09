@@ -35,3 +35,5 @@ dependencies:
     - alibi
     - dc_stat_think
     - lime
+    - vl-convert-python
+

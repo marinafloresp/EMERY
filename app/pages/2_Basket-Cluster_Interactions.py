@@ -18,13 +18,14 @@ if "data" in st.session_state:
     #Create a Heatmap object
     heatmap = heatMap(st.session_state["saved data"],st.session_state["File Name"])
     # Load basket selection from sidebar if found
-    if "basket" in st.session_state:
-        basket = st.session_state["basket"]
+    #if "basket" in st.session_state:
+    #    basket = st.session_state["basket"]
     # Load cluster selection from sidebar if found
-    if "cluster" in st.session_state:
-        cluster = st.session_state["cluster"]
+    #if "cluster" in st.session_state:
+    #    cluster = st.session_state["cluster"]
     #Find samples in basket-cluster interaction
-    subgroup, size = analysis_data.findInteraction(cluster, basket)
+    basket, cluster = st.session_state["basket"], st.session_state["cluster"]
+    subgroup, size = analysis_data.findInteraction(st.session_state["cluster"], st.session_state["basket"])
     if menu == "All interactions":
         st.write("""This page shows results and information about the interactions between clusters and baskets/tissues. Below what information to 
                  display can be selected, such as the number of samples, the number of responsive samples or the inferred response in each basket*cluster interaction.""")
@@ -49,7 +50,7 @@ if "data" in st.session_state:
                 st.dataframe(num_samples, use_container_width=True)
             else:
                 HM_NoS = heatmap.heatmap_interaction(num_samples,num_samples,"Number of samples per interaction"
-                                                         ,min_num, int(cluster), basket)
+                                                         ,min_num, int(st.session_state["cluster"]), st.session_state["basket"])
                 savePlot_plt(HM_NoS, str(cluster) + "_" + basket)
                 st.pyplot(HM_NoS)
                 st.caption("The x-axis shows the levels of clusters. The y-axis shows the levels of baskets/tissues. The colour scale represents "

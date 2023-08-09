@@ -7,24 +7,19 @@ add_logo()
 sideBar()
 st.header("Transcripts (Feature) importance")
 st.write("---")
+
 menu = option_menu(None, ["Overview", "Important Transcripts (Global)", "Important Transcripts (Local)"],
     icons=["bi bi-bar-chart", "bi bi-globe", "bi bi-pin-map"],
     menu_icon="cast", default_index=0, orientation="horizontal")
 
 if "data" in st.session_state:
     data = st.session_state["data"]
-    #Load basket selection from sidebar if found
-    if "basket" in st.session_state:
-        basket = st.session_state["basket"]
-    # Load cluster selection from sidebar if found
-    if "cluster" in st.session_state:
-        cluster = st.session_state["cluster"]
-    data_analysis = st.session_state["Analysis"]
+    basket, cluster = st.session_state["basket"], st.session_state["cluster"]
+    analysis_data = st.session_state["Analysis"]
     #Create main Feature Interaction object
     feat_inter = FI(data)
     #Create SHAP object
     shapFI = Shap_FI(data)
-    explainer, values = shapFI.SHAP()
     if menu == "Overview":
         st.write(" ")
         st.subheader("Overview of Important Transcripts")
@@ -56,6 +51,7 @@ if "data" in st.session_state:
                          "Below, the top {} features that most influence the prediction of the AAC response to the drug are shown".format(num_feat))
             #Option to show plot or raw data in a table
             RawD = st.checkbox("Show raw data", key="rd-SHAP")
+            explainer, values = shapFI.SHAP()
             fig = shapFI.SHAP_summary(values, num_feat, RawD)
             st.caption("The x-axis represents the magnitude of the feature's impact on the model's output."
                        " The y-axis shows the features with the highest impact ordered in decreasing order."
@@ -104,7 +100,6 @@ if "data" in st.session_state:
                 else:
                     global_ALE.global_ALE(feature)
             elif global_samples == 'Use samples in the selected interaction':
-                basket, cluster = basket, cluster
                 # Option to split the ALE results on responsive and non-responsive samples.
                 try:
                     global_ALE.global_ALE_single(feature, cluster,basket, "interaction")
@@ -131,6 +126,7 @@ if "data" in st.session_state:
                         "Please select at least a group.")
 
         elif global_method == 'PDP (SHAP)':
+            explainer, values = shapFI.SHAP()
             st.write("#### Partial Dependence Plot (PDP) by SHAP")
             st.write("The partial dependence plot (PDP) calculated by SHAP shows "
                      "the marginal effect that one or two features, that might interact with each other,"

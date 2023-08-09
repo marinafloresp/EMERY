@@ -32,6 +32,7 @@ alibi = {version = "*", extras = ["ray"]}
 ALE = "*"
 PyALE = "*"
 importlib_resources = "*"
+vl-convert-python = "*"
 
 [dev-packages]
 twine = "*"
