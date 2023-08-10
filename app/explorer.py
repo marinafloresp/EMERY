@@ -43,9 +43,10 @@ class Data():
                 genes.append(col)
         return genes
 
-    #Changes responsive feature to be categorical (Responsive vs Non-responsive) and maps ENSEMBL IDs for Genes' names
+    #Changes resistant feature to be categorical (Resistant vs Non-resistant) and maps ENSEMBL IDs for Genes' names
     def setData(self):
-        self.patient_df["responsive"] = self.patient_df["responsive"].replace([0, 1], ['Non-responsive', 'Responsive'])
+        self.patient_df["resistance"] = self.patient_df["responsive"].replace([0, 1], ['Resistant', 'Non-resistant'])
+        self.patient_df = self.patient_df.drop(['responsive'], axis=1)
         selected_genes = Data.IdGenes(self.expr_df_selected)
         filtered_genes = Data.IdGenes(self.expr_df_filtered)
         self.expr_df_selected.columns = selected_genes
@@ -74,11 +75,11 @@ class Data():
         self.patient_df[feature] = pd.Categorical(self.patient_df[feature])
         size = len(np.unique(self.patient_df[feature]))
         if RD:
-            df_grouped = self.patient_df.groupby(["responsive", feature]).size().reset_index(name='Count')
-            alt_ver_barplot(df_grouped, feature, 'Count', 2, x_lab, "Number of samples", "responsive", title, "NumSamples",
-                            ["responsive", feature, 'Count'])
+            df_grouped = self.patient_df.groupby(["resistance", feature]).size().reset_index(name='Count')
+            alt_ver_barplot(df_grouped, feature, 'Count', 2, x_lab, "Number of samples", "resistant", title, "NumSamples",
+                            ["resistance", feature, 'Count'])
             st.caption("The x-axis shows the levels of the grouping chosen (clusters or baskets/tissues). The y-axis shows the number of samples."
-                       " Within levels, the number of samples that are responsive (blue) or non-responsive (red) to treatment are shown.")
+                       " Within levels, the number of samples that are Non-resistant (green) or Resistant (red) to treatment are shown.")
         else:
             df_grouped = self.patient_df.groupby([feature]).size().reset_index(name='Count')
             alt_ver_barplot(df_grouped, feature, 'Count', size, x_lab, "Number of samples", feature, title, "NumSamples",
@@ -89,15 +90,15 @@ class Data():
     #Displays results in a table format, option to show results grouped by response (RD) within groups
     def showRawData(self, feature, x_variable, RD):
         if RD:
-            features = ["responsive", feature]
-            columns = ["responsive",x_variable, "Number of samples"]
+            features = ["resistance", feature]
+            columns = ["resistance",x_variable, "Number of samples"]
         else:
             features = feature
             columns = [x_variable, "Number of samples"]
         raw_count = self.patient_df.groupby(features).size().to_frame(name = 'count').reset_index()
         raw_count.columns = columns
         if RD:
-            raw_count['responsive'] = raw_count['responsive']== "Responsive"
+            raw_count['resistance'] = raw_count['resistance']== "Non-resistant"
         saveTable(raw_count, "NumOfS")
         st.dataframe(raw_count, use_container_width=True)
 
@@ -105,7 +106,7 @@ class Data():
     def AAC_scatterplot(self, RawD):
         if RawD:
             saveTable(self.patient_df, "rawAAC")
-            self.patient_df["responsive"] = self.patient_df["responsive"] == "Responsive"
+            self.patient_df["resistance"] = self.patient_df["resistance"] == "Non-resistant"
             st.dataframe(self.patient_df, use_container_width=True)
         else:
             reseted_df = self.patient_df.reset_index()
@@ -134,11 +135,11 @@ class Data():
             st.dataframe(df, use_container_width=True)
         else:
             if RD:
-                alt_boxplot(self.patient_df, feature, "responses", 2, x_lab, "AAC response", "responsive", "AAC response",
+                alt_boxplot(self.patient_df, feature, "responses", 2, x_lab, "AAC response", "resistant", "AAC response",
                             "AAC")
                 st.caption(
                     "The x-axis shows the levels of the grouping chosen (clusters or baskets/tissues). The y-axis shows the real AAC response to the drug."
-                    " Within levels, the AAC response by the responsive (blue) or non-responsive (red) samples to treatment are shown.")
+                    " Within levels, the AAC response by the non-resistant (blue) or resistant (red) samples to treatment are shown.")
             else:
                 alt_boxplot(self.patient_df, feature, "responses", size, x_lab, "AAC response", feature, "AAC response", "AAC")
                 st.caption("The x-axis shows the levels of the grouping chosen (clusters or baskets/tissues). The y-axis shows the real AAC response to the drug.")

@@ -93,14 +93,14 @@ if "data" in st.session_state:
             transcripts = global_ALE.transcripts
             feature = searchTranscripts(transcripts)
             if global_samples == 'All samples':
-                # Option to split the ALE results on responsive and non-responsive samples.
-                response = st.checkbox("Split by Responsive vs Non-responsive samples")
+                # Option to split the ALE results on Resistant vs Non-resistant samples.
+                response = st.checkbox("Split by Resistant vs Non-resistant samples")
                 if response:
                     global_ALE.global_ALE_resp(feature)
                 else:
                     global_ALE.global_ALE(feature)
             elif global_samples == 'Use samples in the selected interaction':
-                # Option to split the ALE results on responsive and non-responsive samples.
+                # Option to split the ALE results on Resistant vs Non-resistant samples.
                 try:
                     global_ALE.global_ALE_single(feature, cluster,basket, "interaction")
                 except:
@@ -169,9 +169,9 @@ if "data" in st.session_state:
         st.info("###### Samples in **cluster {}** & **{} basket**: {}".format(cluster, basket, size))
         if size >1:
             with col32:
-                #Option to filter for samples that are responsive, non-responsive or all
+                #Option to filter for samples that are Resistant, Non-resistant or all
                 responses = st.radio("",
-                                 ['All', 'Only responsive samples', "Only non-responsive samples"],
+                                 ['All', 'Only Non-resistant samples', "Only Resistant samples"],
                                  key="samples-resp")
             with col33:
                 #Option to select number of top features to display

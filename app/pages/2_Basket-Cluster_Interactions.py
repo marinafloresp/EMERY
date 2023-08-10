@@ -28,10 +28,10 @@ if "data" in st.session_state:
     subgroup, size = analysis_data.findInteraction(st.session_state["cluster"], st.session_state["basket"])
     if menu == "All interactions":
         st.write("""This page shows results and information about the interactions between clusters and baskets/tissues. Below what information to 
-                 display can be selected, such as the number of samples, the number of responsive samples or the inferred response in each basket*cluster interaction.""")
+                 display can be selected, such as the number of samples, the number of Non-resistant samples or the inferred response in each basket*cluster interaction.""")
         #Option to select the information to display in the heatmap
         heatmap_info = st.radio("Select information to display",
-                            ['Number of samples', 'Number of responsive samples', "Inferred response"],
+                            ['Number of samples', 'Number of Non-resistant samples', "Inferred response"],
                             key="HM_info", horizontal=True)
         st.write("")
         #Option to mark interactions that have a minimum number of samples
@@ -55,10 +55,10 @@ if "data" in st.session_state:
                 st.pyplot(HM_NoS)
                 st.caption("The x-axis shows the levels of clusters. The y-axis shows the levels of baskets/tissues. The colour scale represents "
                            "the number of samples.")
-        elif heatmap_info == 'Number of responsive samples':
-            st.write("#### Number of samples per basket*cluster interaction responsive to the drug")
+        elif heatmap_info == 'Number of Non-resistant samples':
+            st.write("#### Number of samples per basket*cluster interaction non-resistant to the drug")
             st.write(
-                "Explore the number of samples in each basket and cluster combination that are responsive to the drug.")
+                "Explore the number of samples in each basket and cluster combination that are Non-resistant to the drug.")
             # Option to show data in a table
             RawD = st.checkbox("Show raw data", key="raw-data-R")
             response_df = heatmap.heatmapResponse()
@@ -66,13 +66,13 @@ if "data" in st.session_state:
                 saveTable(response_df, "responseHM")
                 st.dataframe(response_df, use_container_width=True)
             else:
-                HM_response = heatmap.heatmap_interaction(response_df,num_samples,"Responsive samples per interaction", min_num,
+                HM_response = heatmap.heatmap_interaction(response_df,num_samples,"Non-resistant samples per interaction", min_num,
                                                           int(cluster), basket)
                 savePlot_plt(HM_response, str(cluster) + "_" + basket)
                 st.pyplot(HM_response)
                 st.caption(
                     "The x-axis shows the levels of clusters. The y-axis shows the levels of baskets/tissues. The colour scale represents "
-                    "the number of samples that are responsive to the drug.")
+                    "the number of samples that are non-resistant to the drug.")
         elif heatmap_info == "Inferred response":
             st.write("#### Inferred response probability per basket*cluster interaction.")
             st.write(
@@ -109,7 +109,7 @@ if "data" in st.session_state:
                     analysis_data.samplesCount(subgroup)
                 with col22:
                     analysis_data.responseSamples(subgroup)
-                    st.caption("Samples ordered from most to least responsive (lower AAC response)")
+                    st.caption("Samples ordered from most to least resistance (lower AAC response)")
                 st.subheader("ECDF")
                 st.write(
                     "The Hierarchical Bayesian model returns a single (mean) value rather than the real distribution. The Empirical Cumulative "
@@ -148,7 +148,7 @@ if "data" in st.session_state:
             st.write("")
             st.write("Principal Component Analysis (PCA) is a dimensionality reduction method that enables the visualisation"
                 " of high-dimensional data. The results for PCA on the data can be explored for the samples in the selected"
-                     " basket*cluster interaction, that are grouped by responsiveness: Responsive vs Non-responsive.")
+                     " basket*cluster interaction, that are grouped by resistance: Resistant vs Non-resistant.")
             st.write(" ")
             #st.write("##### PCA of samples in **cluster {}** & **basket {}**".format(cluster, basket))
             RawD = st.checkbox("Show raw data", key="raw-data")
@@ -157,8 +157,8 @@ if "data" in st.session_state:
         with tab3:
             st.subheader("Prototypes of subgroup")
             st.write("")
-            st.write("The prototype sample of the selected basket*cluster interaction for the Responsive and the"
-                    " Non-responsive groups has been calculated using KMedoids. KMedoids finds the sample that is"
+            st.write("The prototype sample of the selected basket*cluster interaction for the Resistant and the"
+                    " Non-resistant groups has been calculated using KMedoids. KMedoids finds the sample that is"
                      "the closest to the rest of samples in the group. ")
             try:
                 sub_prototypes = Prototypes(data)
@@ -183,7 +183,7 @@ if "data" in st.session_state:
             with col41:
                 #Option to select the type of DEA to perform
                 option = st.selectbox("Select analysis", (
-                "Samples in interaction vs rest of samples", "Within interaction: responsive vs non-responsive"), key="DEA")
+                "Samples in interaction vs rest of samples", "Within interaction: resistant vs non-resistant", "Interaction vs Interaction"), key="DEA")
                 #User input to apply correct p-value threshold for significance
                 pthresh = st.number_input('P-value threshold for significance (0.05 by default)', value=0.05)
                 st.caption("Applied on corrected p-values.")
@@ -219,10 +219,10 @@ if "data" in st.session_state:
                         dea.boxplot_inter(subgroup, transcript)
                 except:
                     st.warning("Not enough samples. Please try a different combination.")
-            else:
+            elif option == "Within interaction: resistant vs non-resistant":
                 st.write(" ")
-                st.subheader("Responsive vs non-responsive samples within basket*cluster interaction")
-                st.write("DEA has been performed within samples in the selected interaction and comparing Responsive vs Non-responsive samples.")
+                st.subheader("Resistant vs non-resistant samples within basket*cluster interaction")
+                st.write("DEA has been performed within samples in the selected interaction and comparing Resistant vs Non-resistant samples.")
                 if subgroup.size > 0:
                     dea.diffAnalysis_response(subgroup, pthresh, logthresh)
                     try:
@@ -246,10 +246,44 @@ if "data" in st.session_state:
                     st.write(" ")
                     st.write(" ")
                     try:
-                        dea.infoTest('Responsive', 'Non-responsive', (cluster,basket), pthresh,logthresh)
+                        dea.infoTest('Resistant', 'Non-resistant', (cluster,basket), pthresh,logthresh)
                     except:
                         st.write(" ")
-
+            elif option == "Interaction vs Interaction":
+                st.write(" ")
+                if subgroup.size > 0:
+                    with col41:
+                        st.write("##### Select a second interaction")
+                        col43, col44 = st.columns((2,2))
+                        with col43:
+                            cluster_inter2 = st.selectbox("Select a cluster", data.clusters_names, key="cluster2")
+                        with col44:
+                            basket_inter2 = st.selectbox("Select a basket", data.baskets_names, key="basket2")
+                        subgroup2, size2 = analysis_data.findInteraction(cluster_inter2,
+                                                                       basket_inter2)
+                        st.info("###### Samples in **cluster {}** & **{} basket**: {}".format(cluster_inter2, basket_inter2, size))
+                    if size2 > 5:
+                        st.subheader("Samples in ({}-cluster {}) vs samples in ({}-cluster {})".format(basket,int(cluster),basket_inter2,int(cluster_inter2)))
+                        st.write(
+                        "DEA has been performed with samples in the selected interaction compared to samples in a second interaction.")
+                        dea.diffAnalysis_adv(subgroup,subgroup2, pthresh, logthresh)
+                        results = dea.showResults("interaction")
+                        st.subheader("Individual transcripts DEA")
+                        st.write(
+                            "The difference in the expression level of a transcript/feature and the individual results from "
+                            "DEA can be explored below. Further information about the transcript can be found in the button that links to its GeneCard profile.")
+                        feature = searchTranscripts(results["Feature"])
+                        col53, col54 = st.columns((2, 4))
+                        with col53:
+                            st.write(" ")
+                            dea.infoTranscript(feature)
+                        with col54:
+                            dea.boxplot_adv(subgroup, subgroup2, basket, basket_inter2, cluster, cluster_inter2, feature)
+                        with col42:
+                            st.write(" ")
+                            st.write(" ")
+                            st.write(" ")
+                            dea.infoTest((basket,int(cluster)),(basket_inter2,int(cluster_inter2)), "Comparison", pthresh, logthresh)
 
 
 

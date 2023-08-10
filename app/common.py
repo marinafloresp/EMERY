@@ -27,7 +27,7 @@ def colours(num):
     if num > 2:
         palette = sns.color_palette("colorblind", num).as_hex()
     else:
-        palette = ['#e50000','#02c14d']
+        palette = ['#02c14d','#e50000']
     return palette
 
 #Adds pyBasket logo in the sidebar

@@ -116,8 +116,8 @@ class Prototypes():
     def findPrototypes_sub(self,subgroup):
         self.subgroup = subgroup
         fulldf = pd.merge(self.patient_df, self.subgroup, left_index=True, right_index=True)
-        feature = fulldf['responsive'].values
-        fulldf = fulldf.drop(['tissues', 'responses', 'basket_number', 'cluster_number', 'responsive'], axis=1)
+        feature = fulldf['resistance'].values
+        fulldf = fulldf.drop(['tissues', 'responses', 'basket_number', 'cluster_number', 'resistance'], axis=1)
         data, sampleMedoids = Prototypes.pseudoMedoids(self,fulldf, feature)
         base = Prototypes.plotMedoids(self,data,sampleMedoids, feature)
         savePlot(base, "subgroup")
@@ -148,8 +148,8 @@ class DEA():
     #Function to split a subgroup of samples by response
     def splitResponses(self,subgroup):
         subgroup_df = pd.merge(self.patient_df, subgroup, left_index=True, right_index=True)
-        self.df_group1 = subgroup_df[subgroup_df["responsive"] == "Responsive"]
-        self.df_group2 = subgroup_df[subgroup_df["responsive"] == "Non-responsive"]
+        self.df_group1 = subgroup_df[subgroup_df["resistance"] == "Resistant"]
+        self.df_group2 = subgroup_df[subgroup_df["resistance"] == "Non-resistant"]
 
     #Function to perform t-test between two specified groups and applying p-value and LFC thresholds
     def ttest_results(self,df1,df2,pthresh,logthresh):
@@ -185,12 +185,12 @@ class DEA():
                    "statistical significance by corrected p-value. Red represents up-regulated transcripts in the second condition compared to the first condition. "
                    "Blue values represent transcripts down-regulated in the second condition compared to the first condition.")
 
-    #Function to perform DEA within a group between responsive vs non-responsive samples
+    #Function to perform DEA within a group between resistant vs non-resistant samples
     def diffAnalysis_response(self,subgroup,pthresh, logthresh):
         DEA.splitResponses(self, subgroup)
         if len(self.df_group1) >1 and len(self.df_group2) >1:
-            self.df_group1 = self.df_group1.drop(['tissues', 'responses', 'basket_number', 'cluster_number', 'responsive'], axis=1)
-            self.df_group2 = self.df_group2.drop(['tissues', 'responses', 'basket_number', 'cluster_number', 'responsive'],
+            self.df_group1 = self.df_group1.drop(['tissues', 'responses', 'basket_number', 'cluster_number', 'resistance'], axis=1)
+            self.df_group2 = self.df_group2.drop(['tissues', 'responses', 'basket_number', 'cluster_number', 'resistance'],
                                                  axis=1)
             self.ttest_res = DEA.ttest_results(self, self.df_group1, self.df_group2, pthresh, logthresh)
             base = DEA.volcanoPlot(self, pthresh, logthresh)
@@ -198,7 +198,7 @@ class DEA():
             st.write(
                 "The volcano plot combines results from Fold Change (FC) Analysis and T-tests to select significant features based on the selected "
                 " statistical significance thresholds (adjusted p-value and LFC threshold). It shows statistical significance (corrected P value) vs the magnitude"
-                " of change (LFC) between the two conditions. Below, results are shown for responsive vs non-responsive samples within the selected basket*cluster"
+                " of change (LFC) between the two conditions. Below, results are shown for resistant vs non-resistant samples within the selected basket*cluster"
                 " interaction.")
             savePlot(base, "DEA:resp")
             st.altair_chart(base, theme="streamlit", use_container_width=True)
@@ -227,7 +227,7 @@ class DEA():
             numShow = st.slider('Select number of transcripts to show', 0,len(self.ttest_res))
             df_show = self.ttest_res[:numShow]
         df_show = df_show.drop('direction', axis = 1)
-        saveTable(df_show, feature)
+        #saveTable(df_show, feature)
         st.dataframe(df_show, use_container_width=True)
         st.caption("Ordered by most significantly different (highest adj p-value).")
         return self.ttest_res
@@ -312,8 +312,8 @@ class DEA():
     # Function to show in a boxplot differences in expression between two groups being compared
     def boxplot_resp(self, subgroup, transcript):
         DEA.splitResponses(self, subgroup)
-        df1 = pd.DataFrame({transcript : self.df_group1[transcript], "class" : self.df_group1["responsive"]})
-        df2 = pd.DataFrame({transcript : self.df_group2[transcript], "class" : self.df_group2["responsive"]})
+        df1 = pd.DataFrame({transcript : self.df_group1[transcript], "class" : self.df_group1["resistance"]})
+        df2 = pd.DataFrame({transcript : self.df_group2[transcript], "class" : self.df_group2["resistance"]})
         full_df = pd.concat([df1, df2])
         alt_boxplot(full_df, "class", transcript, 2, "Group", "Expression level", "class", "Expression level of transcript {}".format(transcript), "DEA"+transcript)
         st.caption(
@@ -330,6 +330,30 @@ class DEA():
                     "Expression level of transcript {}".format(transcript), "DEA_" + transcript)
         st.caption("The x-axis represents the two groups being compared. The y-axis is the expression level of the chosen transcript.")
 
-
-
+    def diffAnalysis_adv(self,subgroup1, subgroup2, pthresh,logthresh):
+        self.df_group1 = subgroup1
+        self.df_group2 = subgroup2
+        self.ttest_res = DEA.ttest_results(self, self.df_group1, self.df_group2, pthresh, logthresh)
+        self.ttest_res.sort_values(by='Corrected P-value', ascending=True)
+        base = DEA.volcanoPlot(self,pthresh,logthresh)
+        st.subheader("Volcano plot")
+        st.write(
+            "The volcano plot combines results from Fold Change (FC) Analysis and T-tests to select significant features based on the selected "
+            " statistical significance thresholds (adjusted p-value and LFC threshold). It shows statistical significance (corrected P value) vs the magnitude"
+            " of change (LFC) between the two conditions.")
+        savePlot(base,"DEA")
+        st.altair_chart(base, theme="streamlit", use_container_width=True)
+        st.caption("The x-axis represents the magnitude of change by the log of the FC. The y-axis represents the "
+                   "statistical significance by corrected p-value. Red represents up-regulated transcripts in the second condition compared to the first condition. "
+                   "Blue values represent transcripts down-regulated in the second condition compared to the first condition.")
+    def boxplot_adv(self, subgroup1, subgroup2, basket1, basket2, cluster1, cluster2, transcript):
+        self.df_group1 = subgroup1
+        self.df_group2 = subgroup2
+        df1 = pd.DataFrame({transcript: self.df_group1[transcript], "Group": '{}-cluster {}'.format(basket1, cluster1)})
+        df2 = pd.DataFrame({transcript: self.df_group2[transcript], "Group": '{}-cluster {}'.format(basket2, cluster2)})
+        full_df = pd.concat([df1, df2])
+        alt_boxplot(full_df, "Group", transcript, 2, "Group", "Expression level", "Group",
+                    "Expression level of transcript {}".format(transcript), "DEA_" + transcript)
+        st.caption(
+            "The x-axis represents the two interactions being compared. The y-axis is the expression level of the chosen transcript.")
 

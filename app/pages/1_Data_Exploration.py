@@ -22,7 +22,7 @@ if "data" in st.session_state:
     if menu == "Samples information":
         st.subheader("Number of samples")
         st.write(
-            "The number of samples can be shown either by cluster or basket/tissue. The number of Responsive and Non-responsive"
+            "The number of samples can be shown either by cluster or basket/tissue. The number of Resistant and Non-resistant"
             " samples within groups can also be explored. ")
         st.write(" ")
         col11, col12 = st.columns((1, 1))
@@ -33,7 +33,7 @@ if "data" in st.session_state:
         with col12:
             st.write(" ")
             #Option to group samples by response within groups
-            RD = st.checkbox("Group by response", key="responsive")
+            RD = st.checkbox("Group by resistance", key="responsive")
             #Option to show data in a table format
             RawD = st.checkbox("Show raw data", key="raw-data")
         if option_tab1 == "Clusters":
@@ -54,8 +54,8 @@ if "data" in st.session_state:
             " or cell line overall survival in response to the drug: the larger the AAC, the more resistance to the"
             " drug is shown."
             " "
-            "The AAC values per cluster o basket/tissue is shown, as well as within these for Responsive and Non-"
-            "responsive samples.")
+            "The AAC values per cluster o basket/tissue is shown, as well as within these for Resistant and Non-"
+            "resistant samples.")
         st.write(" ")
         col21, col22 = st.columns((1, 1))
         with col21:
@@ -72,7 +72,7 @@ if "data" in st.session_state:
         else:
             with col22:
                 # Option to group samples by response within groups
-                RD_AAC = st.checkbox("Group by response", key="responsive-AAC")
+                RD_AAC = st.checkbox("Group by resistance", key="responsive-AAC")
             if option_tab2 == "Clusters":
                 data.AAC_response("cluster_number", RD_AAC, "Cluster number", RawD_AAC)
             elif option_tab2 == 'Baskets/Tissues':
@@ -133,13 +133,13 @@ if "data" in st.session_state:
                      "clusters, baskets/tissues or response.")
             st.write(" ")
             # Option to select level of grouping: clusters, baskets or response
-            option_PCA = st.selectbox("Select how to group samples", ('Clusters', 'Baskets/Tissues', 'Responsive'), key="PCA")
+            option_PCA = st.selectbox("Select how to group samples", ('Clusters', 'Baskets/Tissues', 'Resistance'), key="PCA")
             #Option to show data in table format
             RawD = st.checkbox("Show raw data", key="raw-data-PCA")
             if option_PCA == "Clusters":
                 analysis.PCA_analysis("cluster_number", RawD)
-            elif option_PCA == "Responsive":
-                analysis.PCA_analysis("responsive", RawD)
+            elif option_PCA == "Resistance":
+                analysis.PCA_analysis("resistance", RawD)
             elif option_PCA == 'Baskets/Tissues':
                 analysis.PCA_analysis("tissues", RawD)
         #Prototypes samples subpage
@@ -167,7 +167,7 @@ if "data" in st.session_state:
             col51, col52 = st.columns((2, 2))
             with col51:
                 # Option to select level of grouping: clusters, baskets or response
-                option = st.selectbox("Select how to group samples", ('Clusters', 'Baskets/Tissues', 'Responsive'), key="DEA")
+                option = st.selectbox("Select how to group samples", ('Clusters', 'Baskets/Tissues', 'Resistance'), key="DEA")
                 if option == 'Clusters':
                     subgroups = data.clusters_names
                     feature = "cluster_number"
@@ -175,8 +175,8 @@ if "data" in st.session_state:
                     subgroups = data.baskets_names
                     feature = "tissues"
                 else:
-                    subgroups = ["Responsive","Non-responsive"]
-                    feature = "responsive"
+                    subgroups = ["Resistant","Non-resistant"]
+                    feature = "resistance"
                 #Option to select groups to perform DEA
                 groups = st.multiselect(
                     'Please select up to 2 Groups to compare', subgroups, max_selections=2)

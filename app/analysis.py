@@ -32,21 +32,21 @@ class Analysis(Data):
         num = len(sub_transcript)
         return sub_transcript, num
 
-    #Function to show the number of responsive/non-responsive samples in a basket-cluster interaction
+    #Function to show the number of resistant/non-resistant samples in a basket-cluster interaction
     def samplesCount(self,subgroup):
         fulldf = pd.merge(self.patient_df, subgroup, left_index=True, right_index=True)
-        df_grouped = fulldf.groupby(['responsive']).size().reset_index(name='Count')
-        alt_ver_barplot(df_grouped, "responsive", 'Count', 2, "Response", "Number of samples", "responsive", "Samples responsive vs non-responsive",
-                        "NS_Inter", ["responsive", 'Count'])
-        st.caption("Number of responsive and non-responsive samples in the interaction.")
+        df_grouped = fulldf.groupby(['resistance']).size().reset_index(name='Count')
+        alt_ver_barplot(df_grouped, "resistance", 'Count', 2, "Response", "Number of samples", "resistance", "Samples resistant vs non-resistant",
+                        "NS_Inter", ["resistance", 'Count'])
+        st.caption("Number of resistant and non-resistant samples in the interaction.")
 
     #Function to show information related to the samples in a basket-cluster interaction
     def responseSamples(self,subgroup):
         fulldf = pd.merge(self.patient_df, subgroup, left_index=True, right_index=True)
-        fulldf = fulldf[['tissues', 'responses', 'cluster_number', 'responsive']]
+        fulldf = fulldf[['tissues', 'responses', 'cluster_number', 'resistance']]
         fulldf = fulldf.sort_values(by='responses')
         fulldf.index.name = 'Sample'
-        fulldf['responsive'] = fulldf['responsive'] == "Responsive"
+        fulldf['resistance'] = fulldf['resistance'] == "Non-resistant"
         saveTable(fulldf, "Interaction")
         st.dataframe(fulldf, use_container_width=True)
 
@@ -78,7 +78,7 @@ class Analysis(Data):
     def plot_PCA(self,feature,adv):
         df = self.pca_adv if adv == True else self.pca_df
         df = df.reset_index()
-        if feature == "responsive":
+        if feature == "resistance":
             palette = colours(2)
         else:
             palette = colours(25)
@@ -112,7 +112,7 @@ class Analysis(Data):
 
     #Function to perform PCA on the samples in the selected basket-cluster interaction
     def advanced_PCA(self, df):
-        y = self.patient_df["responsive"]
+        y = self.patient_df["resistance"]
         x_scaled = StandardScaler().fit_transform(df)
         pca = PCA(n_components=5)
         pca_features = pca.fit_transform(x_scaled)
@@ -120,7 +120,7 @@ class Analysis(Data):
             data=pca_features,
             columns=['PC1', 'PC2', 'PC3', 'PC4', 'PC5'])
         pca_df.index = df.index
-        pca_df["responsive"] = y
+        pca_df["resistance"] = y
         variance = pca.explained_variance_
         self.pca_adv = pca_df
         self.pca_adv_var = variance
@@ -141,7 +141,7 @@ class Analysis(Data):
                     saveTable(self.pca_adv, "PCA")
                     st.dataframe(pcaDF, use_container_width=True)
             else:
-                Analysis.plot_PCA(self, "responsive",adv= True)
+                Analysis.plot_PCA(self, "resistance",adv= True)
         except:
             st.warning("Not enough samples. Please try a different combination.")
 
@@ -187,7 +187,7 @@ class heatMap(Analysis):
         plt.xticks(fontsize=9)
         return fig
 
-    #Function to return dataframe with information about the number of responsive samples
+    #Function to return dataframe with information about the number of resistant samples
     def heatmapResponse(self):
         clusters = self.clusters_names
         baskets = self.baskets_names
@@ -196,7 +196,7 @@ class heatMap(Analysis):
             response = []
             for cluster in clusters:
                 sub = len(self.patient_df[(self.patient_df['cluster_number'] == cluster) & (
-                            self.patient_df['tissues'] == basket) & (self.patient_df['responsive'] == "Responsive")])
+                            self.patient_df['tissues'] == basket) & (self.patient_df['resistance'] == "Non-resistant")])
                 response.append(sub)
             data.append(response)
         df = pd.DataFrame(data, baskets, clusters)

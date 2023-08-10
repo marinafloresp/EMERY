@@ -111,15 +111,13 @@ class FI():
         num = len(transcript_df)
         return samples,num
 
-    #Function to filter samples by responsiveness. Input: list of samples, response to show
+    #Function to filter samples by resistance. Input: list of samples, response to show
     def filterSamples(self,samples,response):
         df = self.patient_df.loc[self.patient_df["samples"].isin(samples.tolist())]
-        if response == 'Only responsive samples':
-            resp = 1
-            df = df[df["responsive"] == resp]
-        elif response == "Only non-responsive samples":
-            resp = 0
-            df = df[df["responsive"]==resp]
+        if response == 'Only Non-resistant samples':
+            df = df[df["resistance"] == "Non-resistant"]
+        elif response == "Only Resistant samples":
+            df = df[df["resistance"]=="Resistant"]
         else:
             df = df
         return df
@@ -304,18 +302,18 @@ class Global_ALE(FI):
         st.caption("The x-axis represents the values or intervals of the feature. The y-axis represents the accumulated effects or changes in the"
                    " model's predictions.")
 
-    #Function to split samples by responsive vs non-responsive
+    #Function to split samples by resistant vs non-resistant
     def splitResponse(self, resp):
         self.patient_df = self.patient_df.reset_index()
-        selection = self.patient_df[(self.patient_df['responsive'] == resp)]
+        selection = self.patient_df[(self.patient_df['resistance'] == resp)]
         samples = selection["samples"]
         return samples
 
-    #Function to calculate ALE for a chosen feature for responsive vs non-responsive samples
+    #Function to calculate ALE for a chosen feature for resistant vs non-resistant samples
     def global_ALE_resp(self,feature):
         rf = super(Global_ALE, self).trainRF(self.drug_response)
-        samples_g1 = Global_ALE.splitResponse(self,'Responsive').values
-        samples_g2 = Global_ALE.splitResponse(self,'Non-responsive').values
+        samples_g1 = Global_ALE.splitResponse(self,'Resistant').values
+        samples_g2 = Global_ALE.splitResponse(self,'Non-resistant').values
         lr_ale = ALE(rf.predict, feature_names=self.transcripts, target_names=['drug response'])
         df1 = self.expr_df_selected.loc[samples_g1].to_numpy()
         df2 = self.expr_df_selected.loc[samples_g2].to_numpy()
@@ -325,8 +323,8 @@ class Global_ALE(FI):
         values1 = lr_exp1.data['ale_values'][index]
         values2 = lr_exp2.data['ale_values'][index]
         fig, ax = plt.subplots(figsize=(12, 6))
-        plot_ale(lr_exp1, features=[feature], ax=ax, line_kw={'label': "Non-responsive"})
-        plot_ale(lr_exp2, features=[feature], ax=ax, line_kw={'label': "Responsive"})
+        plot_ale(lr_exp1, features=[feature], ax=ax, line_kw={'label': "Resistant"})
+        plot_ale(lr_exp2, features=[feature], ax=ax, line_kw={'label': "Non-resistant"})
         min1 = min(values1)
         min2 = min(values2)
         min_limit = min1 if min1 < min2 else min2
@@ -334,13 +332,13 @@ class Global_ALE(FI):
         max2 = max(values2)
         max_limit = max1 if max1 > max2 else max2
         ax.set_ylim(min_limit + (min_limit * 2), max_limit + (max_limit *2))
-        plt.title("ALE for transcript {} in groups {} vs {}".format(feature, "Non-responsive", "Responsive"))
+        plt.title("ALE for transcript {} in groups {} vs {}".format(feature, "Resistant", "Non-resistant"))
         change1 = max1 - min1
         change2 = max2-min2
-        st.write("##### The magnitude of impact of the feature in the model's prediction for Responsive samples is {}.".format(
+        st.write("##### The magnitude of impact of the feature in the model's prediction for Non-Resistant samples is {}.".format(
             round(change2.tolist()[0], 6)))
         st.write(
-            "##### The magnitude of impact of the feature in the model's prediction for Non-responsive samples is {}.".format(
+            "##### The magnitude of impact of the feature in the model's prediction for Resistant samples is {}.".format(
                 round(change1.tolist()[0], 6)))
         savePlot_plt(fig, "ALE-resp")
         st.pyplot(fig)
