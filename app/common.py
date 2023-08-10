@@ -155,7 +155,7 @@ def alt_ver_barplot(df, x, y, num_cols, title_x, title_y, colors,main_title,save
         alt.X(x +':N', title=title_x),
         alt.Y(y+':Q', title=title_y,axis=alt.Axis(grid=False)), alt.Color(colors+':N'), tooltip = tooltip
     ).properties(
-        height=500, width = 600,title=main_title
+        height=500, width = 700,title=main_title
     ).configure_range(
         category=alt.RangeScheme(palette))
     savePlot(base, save)

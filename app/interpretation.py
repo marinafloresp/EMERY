@@ -47,8 +47,8 @@ class Prototypes():
         for x in pseudo_medoids:
             indexes.append(x.name)
         x_scaled = StandardScaler().fit_transform(rawX)
-        pca_2 = PCA(n_components=5)
-        X = pca_2.fit_transform(x_scaled)
+        pca = PCA(n_components=5)
+        X = pca.fit_transform(x_scaled)
         X_df = pd.DataFrame(
             data=X,
             columns=['PC1', 'PC2', 'PC3', 'PC4', 'PC5'])
@@ -119,7 +119,7 @@ class Prototypes():
         feature = fulldf['responsive'].values
         fulldf = fulldf.drop(['tissues', 'responses', 'basket_number', 'cluster_number', 'responsive'], axis=1)
         data, sampleMedoids = Prototypes.pseudoMedoids(self,fulldf, feature)
-        base = Prototypes.plotMedoids(self,data, sampleMedoids, feature)
+        base = Prototypes.plotMedoids(self,data,sampleMedoids, feature)
         savePlot(base, "subgroup")
         st.altair_chart(base, theme="streamlit", use_container_width=True)
         st.caption("The prototypical sample of each level is marked in black.")
@@ -148,8 +148,8 @@ class DEA():
     #Function to split a subgroup of samples by response
     def splitResponses(self,subgroup):
         subgroup_df = pd.merge(self.patient_df, subgroup, left_index=True, right_index=True)
-        self.df_group1 = subgroup_df[subgroup_df["responsive"] == "Non-responsive"]
-        self.df_group2 = subgroup_df[subgroup_df["responsive"] == "Responsive"]
+        self.df_group1 = subgroup_df[subgroup_df["responsive"] == "Responsive"]
+        self.df_group2 = subgroup_df[subgroup_df["responsive"] == "Non-responsive"]
 
     #Function to perform t-test between two specified groups and applying p-value and LFC thresholds
     def ttest_results(self,df1,df2,pthresh,logthresh):
