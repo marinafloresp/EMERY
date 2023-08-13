@@ -112,12 +112,12 @@ class Prototypes():
         saveTable(table, option)
         st.dataframe(table)
 
-    # Function to find prototypes in the basket-cluster interaction subgroup of samples , plot them and show them in a table
+    # Function to find prototypes in the disease-cluster interaction subgroup of samples , plot them and show them in a table
     def findPrototypes_sub(self,subgroup):
         self.subgroup = subgroup
         fulldf = pd.merge(self.patient_df, self.subgroup, left_index=True, right_index=True)
         feature = fulldf['resistance'].values
-        fulldf = fulldf.drop(['tissues', 'responses', 'basket_number', 'cluster_number', 'resistance'], axis=1)
+        fulldf = fulldf.drop(['disease', 'responses', 'basket_number', 'cluster_number', 'resistance'], axis=1)
         data, sampleMedoids = Prototypes.pseudoMedoids(self,fulldf, feature)
         base = Prototypes.plotMedoids(self,data,sampleMedoids, feature)
         savePlot(base, "subgroup")
@@ -189,8 +189,8 @@ class DEA():
     def diffAnalysis_response(self,subgroup,pthresh, logthresh):
         DEA.splitResponses(self, subgroup)
         if len(self.df_group1) >1 and len(self.df_group2) >1:
-            self.df_group1 = self.df_group1.drop(['tissues', 'responses', 'basket_number', 'cluster_number', 'resistance'], axis=1)
-            self.df_group2 = self.df_group2.drop(['tissues', 'responses', 'basket_number', 'cluster_number', 'resistance'],
+            self.df_group1 = self.df_group1.drop(['disease', 'responses', 'basket_number', 'cluster_number', 'resistance'], axis=1)
+            self.df_group2 = self.df_group2.drop(['disease', 'responses', 'basket_number', 'cluster_number', 'resistance'],
                                                  axis=1)
             self.ttest_res = DEA.ttest_results(self, self.df_group1, self.df_group2, pthresh, logthresh)
             base = DEA.volcanoPlot(self, pthresh, logthresh)
@@ -198,7 +198,7 @@ class DEA():
             st.write(
                 "The volcano plot combines results from Fold Change (FC) Analysis and T-tests to select significant features based on the selected "
                 " statistical significance thresholds (adjusted p-value and LFC threshold). It shows statistical significance (corrected P value) vs the magnitude"
-                " of change (LFC) between the two conditions. Below, results are shown for resistant vs non-resistant samples within the selected basket*cluster"
+                " of change (LFC) between the two conditions. Below, results are shown for resistant vs non-resistant samples within the selected disease*cluster"
                 " interaction.")
             savePlot(base, "DEA:resp")
             st.altair_chart(base, theme="streamlit", use_container_width=True)
@@ -242,7 +242,7 @@ class DEA():
         st.write(
             "The volcano plot combines results from Fold Change (FC) Analysis and T-tests to select significant features based on the selected "
             " statistical significance thresholds (corrected p-value and LFC threshold). It shows statistical significance (Corrected P value) vs the magnitude"
-            " of change (LFC) between the two conditions. Below, results are shown for samples in the selected basket*cluster interaction"
+            " of change (LFC) between the two conditions. Below, results are shown for samples in the selected disease*cluster interaction"
             " vs any other sample.")
         base = DEA.volcanoPlot(self,pthresh,logthresh)
         savePlot(base, "DEA")
@@ -346,11 +346,11 @@ class DEA():
         st.caption("The x-axis represents the magnitude of change by the log of the FC. The y-axis represents the "
                    "statistical significance by corrected p-value. Red represents up-regulated transcripts in the second condition compared to the first condition. "
                    "Blue values represent transcripts down-regulated in the second condition compared to the first condition.")
-    def boxplot_adv(self, subgroup1, subgroup2, basket1, basket2, cluster1, cluster2, transcript):
+    def boxplot_adv(self, subgroup1, subgroup2, disease1, disease2, cluster1, cluster2, transcript):
         self.df_group1 = subgroup1
         self.df_group2 = subgroup2
-        df1 = pd.DataFrame({transcript: self.df_group1[transcript], "Group": '{}-cluster {}'.format(basket1, cluster1)})
-        df2 = pd.DataFrame({transcript: self.df_group2[transcript], "Group": '{}-cluster {}'.format(basket2, cluster2)})
+        df1 = pd.DataFrame({transcript: self.df_group1[transcript], "Group": '{}-cluster {}'.format(disease1, cluster1)})
+        df2 = pd.DataFrame({transcript: self.df_group2[transcript], "Group": '{}-cluster {}'.format(disease2, cluster2)})
         full_df = pd.concat([df1, df2])
         alt_boxplot(full_df, "Group", transcript, 2, "Group", "Expression level", "Group",
                     "Expression level of transcript {}".format(transcript), "DEA_" + transcript)

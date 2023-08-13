@@ -14,12 +14,13 @@ menu = option_menu(None, ["Overview", "Important Transcripts (Global)", "Importa
 
 if "data" in st.session_state:
     data = st.session_state["data"]
-    basket, cluster = st.session_state["basket"], st.session_state["cluster"]
+    disease, cluster = st.session_state["disease"], st.session_state["cluster"]
     analysis_data = st.session_state["Analysis"]
     #Create main Feature Interaction object
     feat_inter = FI(data)
     #Create SHAP object
     shapFI = Shap_FI(data)
+    explainer, values = shapFI.SHAP()
     if menu == "Overview":
         st.write(" ")
         st.subheader("Overview of Important Transcripts")
@@ -36,7 +37,7 @@ if "data" in st.session_state:
         if overview_model == "RF feature importance":
             st.write("#### Random Forest")
             st.write("Ramdom Forest is a common ML model that combines the output of multiple decision trees to reach a single result. It has been used "
-                     "as part of the pyBasket pipeline to select the 500 most important features. Features importance has been ranked based on the decrease in the impurity measure. "
+                     "as part of the pydisease pipeline to select the 500 most important features. Features importance has been ranked based on the decrease in the impurity measure. "
                      "Below is shown the top {} features that are most important, i.e. their inclusion in a Random Forest will lead to a significant decrease in impurity. "
                      "Features are ranked based on their importance, higher values indicate greater importance. ".format(num_feat))
             #Option to show plot or raw data in a table
@@ -78,16 +79,16 @@ if "data" in st.session_state:
         if global_method == 'ALE':
             st.write("#### Accumulated Local Effects")
             st.write(" ")
-            st.write("Accumulated Local Effects (ALE) describe how a feature/transcript influences the prediction made by the ML "
-                     "model on average. Here, this method has been implemented so that the behaviour of a feature can be explored for all samples or "
-                     "for a group of samples with specified conditions, such as only samples included in a selected basket*cluster interaction, a specific cluster or basket."
-                     "In addition, the impact of a feature in two different groups of samples, e.g. two different clusters, can also be compared. ")
+            st.write("Accumulated Local Effects (ALE) describe how a transcript (feature) influences the prediction of AAC drug response. This method has been implemented so that the impact of a transcript's values"
+                     " can be explored for all samples or "
+                     "for a group of samples with specified conditions, such as only samples included in a selected disease*cluster interaction, a specific cluster or disease type."
+                     "In addition, the impact of a transcript in two different groups of samples, e.g. two different clusters, can also be compared. ")
             st.write(
-                "The resulting ALE plot shows how the model's predictions change as the feature's values move across different bins.")
+                "The resulting ALE plot shows how the prediction of the AAC drug response change as the transcript's expression values (represented by dots) move across different intervals (represented by lines in the x-axis).")
             global_ALE = Global_ALE(data)
             #Option to select the group of samples to display the feature's impact
             global_samples = st.radio("", ['All samples','Use samples in the selected interaction', 'Select only samples in cluster',
-                                     'Select only samples in tissue/basket'],
+                                     'Select only samples in disease type'],
                                 key="global_samples", horizontal=True)
             #List of transcripts and option to select
             transcripts = global_ALE.transcripts
@@ -102,20 +103,20 @@ if "data" in st.session_state:
             elif global_samples == 'Use samples in the selected interaction':
                 # Option to split the ALE results on Resistant vs Non-resistant samples.
                 try:
-                    global_ALE.global_ALE_single(feature, cluster,basket, "interaction")
+                    global_ALE.global_ALE_single(feature, cluster,disease, "interaction")
                 except:
-                    st.warning("Not enough samples in the selected basket*cluster interaction. Please try a different combination.")
+                    st.warning("Not enough samples in the selected disease*cluster interaction. Please try a different combination.")
             else:
                 if global_samples == 'Select only samples in cluster':
                     #Option to select the subgroup or subgroups of samples
                     groups = st.multiselect(
                         'Please select a cluster or up to 2 clusters to compare.', data.clusters_names, max_selections=2)
                     option = "clusters"
-                elif global_samples == 'Select only samples in tissue/basket':
+                elif global_samples == 'Select only samples in disease type':
                     # Option to select the subgroup or subgroups of samples
                     groups = st.multiselect(
-                        'Please select a tissue or up to 2 tissues to compare.',data.baskets_names, max_selections=2)
-                    option = "baskets"
+                        'Please select a disease type or up to 2 disease types to compare.',data.disease_types, max_selections=2)
+                    option = "disease"
                 try:
                     if len(groups)<2:
                         global_ALE.global_ALE_single(feature, groups[0],None,option)
@@ -124,9 +125,7 @@ if "data" in st.session_state:
                 except:
                     st.warning(
                         "Please select at least a group.")
-
         elif global_method == 'PDP (SHAP)':
-            explainer, values = shapFI.SHAP()
             st.write("#### Partial Dependence Plot (PDP) by SHAP")
             st.write("The partial dependence plot (PDP) calculated by SHAP shows "
                      "the marginal effect that one or two features, that might interact with each other,"
@@ -151,22 +150,22 @@ if "data" in st.session_state:
         with col31:
             #Option to filter samples to show for selection
             group_samples = st.radio("", ['Use samples in interaction', 'Select only samples in a cluster',
-                                      'Select only samples in a tissue/basket'],
+                                      'Select only samples in a disease type'],
                                  key="Local-samples")
         if group_samples == 'Select only samples in a cluster':
             with col33:
                 #Option to select a cluster
                 cluster= st.selectbox("Select a cluster", data.clusters_names, key="only_cluster")
-            basket = "None"
-        elif group_samples == 'Select only samples in a tissue/basket':
+            disease = "None"
+        elif group_samples == 'Select only samples in a disease type':
             with col33:
-                #Option to select a basket
-                basket = st.selectbox("Select a basket/tissue", data.baskets_names, key="only_basket")
+                #Option to select a disease
+                disease = st.selectbox("Select a disease type", data.disease_types, key="only_disease")
             cluster = "None"
         elif group_samples == 'Use samples in selection':
-            basket, cluster = basket, cluster
-        transcripts, size = feat_inter.displaySamples(cluster,basket)
-        st.info("###### Samples in **cluster {}** & **{} basket**: {}".format(cluster, basket, size))
+            disease, cluster = disease, cluster
+        transcripts, size = feat_inter.displaySamples(cluster,disease)
+        st.info("###### Samples in **cluster {}** & **{} disease**: {}".format(cluster, disease, size))
         if size >1:
             with col32:
                 #Option to filter for samples that are Resistant, Non-resistant or all

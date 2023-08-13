@@ -94,17 +94,17 @@ class FI():
         else:
             alt_hor_barplot(raw_D, 'Importance', 'Features', num_feats, 'Mean Importance score', "Features", 'Features', "Feature Importance by Permutation based", "PIB")
 
-    #Function to filter samples by chosen criteria (cluster or basket, or both). Input: cluster choice, basket choice
-    def displaySamples(self,cluster,basket):
+    #Function to filter samples by chosen criteria (cluster or disease type, or both). Input: cluster choice, disease choice
+    def displaySamples(self,cluster,disease):
         transcripts = self.expr_df_selected
         self.patient_df = self.patient_df.reset_index()
         if cluster == "None":
-            sub_patients = self.patient_df[(self.patient_df['tissues'] == basket)]
-        elif basket == "None":
+            sub_patients = self.patient_df[(self.patient_df['disease'] == disease)]
+        elif disease == "None":
             sub_patients = self.patient_df[(self.patient_df['cluster_number'] == cluster)]
         else:
             sub_patients = self.patient_df[
-                (self.patient_df['cluster_number'] == cluster) & (self.patient_df['tissues'] == basket)]
+                (self.patient_df['cluster_number'] == cluster) & (self.patient_df['disease'] == disease)]
         selection = sub_patients
         samples = selection["samples"]
         transcript_df = transcripts.loc[samples]
@@ -219,7 +219,7 @@ class Global_ALE(FI):
         if option =="clusters":
             group1, num1 = super(Global_ALE,self).displaySamples(g1, "None")
             group2, num2 = super(Global_ALE, self).displaySamples(g2, "None")
-        elif option == "baskets":
+        elif option == "disease":
             group1, num1 = super(Global_ALE, self).displaySamples("None",g1)
             group2, num2 = super(Global_ALE, self).displaySamples("None",g2)
         samples_g1 = group1.values
@@ -253,6 +253,10 @@ class Global_ALE(FI):
                 round(change1.tolist()[0], 6)))
         savePlot_plt(fig,"ALE-comparison")
         st.pyplot(fig)
+        st.caption(
+            "The x-axis represents the values of the feature (dots). The 'grass' or lines in the x-axis represents the intervals in which the effect"
+            "of the transcript for the prediction has been calculated. The y-axis represents the accumulated effects or changes in the"
+            " model's predictions.")
 
     #Function to compute ALE for a feature on all samples. Input: feature chosen
     def global_ALE(self,feature):
@@ -272,18 +276,23 @@ class Global_ALE(FI):
         savePlot(fig, "ALE-all")
         st.pyplot(fig)
         st.caption(
-            "The x-axis represents the values or intervals of the feature. The y-axis represents the accumulated effects or changes in the"
+            "The x-axis represents the values of the feature (dots). The 'grass' or lines in the x-axis represents the intervals in which the effect"
+            "of the transcript for the prediction has been calculated. The y-axis represents the accumulated effects or changes in the"
             " model's predictions.")
 
-    #Function to compute ALE on a chosen feature for a selected group of samples. Input: chosen feature, cluster (if chosen), basket (if chosen), flag to use both for samples in interaction
+    #Function to compute ALE on a chosen feature for a selected group of samples. Input: chosen feature, cluster (if chosen), disease (if chosen), flag to use both for samples in interaction
     def global_ALE_single(self,feature,g1,g2,option):
         rf = super(Global_ALE, self).trainRF(self.drug_response)
         if option =="clusters":
             group1, num1 = super(Global_ALE,self).displaySamples(g1, "None")
-        elif option == "baskets":
+            group = g1
+        elif option == "disease":
             group1, num1 = super(Global_ALE, self).displaySamples("None",g1)
+            group = g1
         elif option == "interaction":
             group1, num1 = super(Global_ALE, self).displaySamples(g1,g2)
+            group = (g1,g2)
+
         samples_g1 = group1.values
         lr_ale = ALE(rf.predict, feature_names=self.transcripts, target_names=['drug response'])
         df1 = self.expr_df_selected.loc[samples_g1].to_numpy()
@@ -293,13 +302,14 @@ class Global_ALE(FI):
         fig, ax = plt.subplots(figsize=(12, 6))
         plot_ale(lr_exp1, features=[feature], ax=ax)
         ax.set_ylim(min(values)+min(values)*2, max(values)+max(values)*2)
-        plt.title("ALE for transcript {} in group {}".format(feature,option))
+        plt.title("ALE for transcript {} in group {}".format(feature,group))
         change = max(values) - min(values)
         st.write("##### The magnitude of impact of the feature in the model's prediction is {}.".format(
             round(change.tolist()[0], 6)))
         savePlot_plt(fig, "ALE-single")
         st.pyplot(fig)
-        st.caption("The x-axis represents the values or intervals of the feature. The y-axis represents the accumulated effects or changes in the"
+        st.caption("The x-axis represents the values of the feature (dots). The 'grass' or lines in the x-axis represents the intervals in which the effect"
+                   "of the transcript for the prediction has been calculated. The y-axis represents the accumulated effects or changes in the"
                    " model's predictions.")
 
     #Function to split samples by resistant vs non-resistant
@@ -343,6 +353,7 @@ class Global_ALE(FI):
         savePlot_plt(fig, "ALE-resp")
         st.pyplot(fig)
         st.caption(
-            "The x-axis represents the values or intervals of the feature. The y-axis represents the accumulated effects or changes in the"
+            "The x-axis represents the values of the feature (dots). The 'grass' or lines in the x-axis represents the intervals in which the effect"
+            "of the transcript for the prediction has been calculated. The y-axis represents the accumulated effects or changes in the"
             " model's predictions.")
 

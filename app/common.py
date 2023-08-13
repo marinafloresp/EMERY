@@ -8,6 +8,8 @@ import dc_stat_think as dcst
 import gzip
 import pickle
 from loguru import logger
+from matplotlib import pyplot as plt
+import scipy.stats as stats
 
 if "data" in st.session_state:
     data = st.session_state["data"]
@@ -30,7 +32,7 @@ def colours(num):
         palette = ['#02c14d','#e50000']
     return palette
 
-#Adds pyBasket logo in the sidebar
+#Adds EMERY logo in the sidebar
 def add_logo():
     st.markdown(
         """
@@ -87,22 +89,22 @@ def saveTable(df, feature):
     else:
         st.write("")
 
-#Option to select basket and cluster interaction in the sidebar. If number of samples is more than 0, an option to save the samples in a
+#Option to select disease and cluster interaction in the sidebar. If number of samples is more than 0, an option to save the samples in a
 #CSV file will appear.
 def sideBar():
     if "data" in st.session_state:
         data = st.session_state["data"]
         analysis_data = st.session_state["Analysis"]
-        st.sidebar.title("Select basket*cluster interaction")
+        st.sidebar.title("Select disease*cluster interaction")
         with st.sidebar:
             cluster = st.selectbox("Select a cluster", data.clusters_names, key="cluster")
             if "cluster" not in st.session_state:
                 st.session_state["cluster"] = cluster
-            basket = st.selectbox("Select a basket", data.baskets_names, key="basket")
-            if "basket" not in st.session_state:
-                st.session_state["basket"] = basket
-            subgroup, size = analysis_data.findInteraction(cluster, basket)
-            st.info("###### Samples in **cluster {}** & **{} basket**: {}".format(cluster, basket, size))
+            disease = st.selectbox("Select a disease type", data.disease_types, key="disease")
+            if "disease" not in st.session_state:
+                st.session_state["disease"] = disease
+            subgroup, size = analysis_data.findInteraction(cluster, disease)
+            st.info("###### Samples in **cluster {}** & **{} disease**: {}".format(cluster, disease, size))
             if size>0:
                 if st.button('Save samples', key="table_samples"):
                     subgroup.to_csv('samples_interaction.csv', index=False)
@@ -199,25 +201,46 @@ def ecdf(data,intervals):
     pct_val = pd.DataFrame({'x': np.round(pct_val,3), 'y': intervals})
     return pct, pct_val
 
-#Applies ECDF for samples in a chosen basket-cluster interaction (Basket-Cluster interaction-Selected interaction page)
-def ecdf_interaction(data,basket,cluster,RawD, cred_inter):
+#Applies ECDF for samples in a chosen disease-cluster interaction (disease-Cluster interaction-Selected interaction page)
+def ecdf_interaction(data,disease,cluster,RawD, cred_inter):
     intervals = np.array([100-cred_inter-5, 50, cred_inter+5])
-    try:
-        basket_index = data.baskets_names.index(basket)
-        cluster_index = data.clusters_names.index(cluster)
-        inferred_prob = data.stacked_posterior.joint_p[basket_index][cluster_index]
-        pct, pct_val = ecdf(inferred_prob, intervals)
-        title = "ECDF for "+ basket + "*" + str(cluster)+ " interaction"
-        st.write("""##### {}th, 50th and {}th Percentile values are""".format(intervals[0], intervals[
-            2]) + ": {0:.2f}, {1:.2f} and {2:.2f}".format(*pct_val['x']))
-        if RawD:
-            saveTable(pct, "raw-ecdf")
-            st.dataframe(pct, use_container_width=True)
-        else:
-            alt_line_chart(pct,pct_val,'Probability', 'Percent', 'Probability', 'Percent', "Cumulative distribution for "+title,"ecdf")
-            st.caption("The x-axis represents the probabilities points. The y-axis represents the proportion or fraction of data points that are less than or equal to a given value.")
-    except:
-        st.warning("Please select a smaller interval.")
+    disease_index = data.disease_types.index(disease)
+    cluster_index = data.clusters_names.index(cluster)
+    inferred_prob = data.stacked_posterior.joint_p[disease_index][cluster_index]
+    sorted_data = np.sort(inferred_prob.values)
+    df_mean = np.mean(sorted_data)
+    df_std = np.std(sorted_data)
+    #pct, pct_val = ecdf(inferred_prob, intervals)
+    pdf = stats.norm.pdf(sorted_data, df_mean, df_std)
+    #cdf_values = stats.norm.cdf(sorted_data, loc=0, scale=1)
+    lower_bound = np.percentile(inferred_prob.values, intervals[0])
+    median = np.percentile(inferred_prob.values, intervals[1])
+    upper_bound = np.percentile(inferred_prob.values, intervals[2])
+    fig = plt.figure(figsize=(10,6))
+    plt.plot(sorted_data, pdf,color='red', label='Estimated PDF')
+    plt.hist(inferred_prob.values, density=True, bins=30, alpha=0.5, label='Probability density')
+    plt.fill_between(sorted_data, 0, pdf, where=(sorted_data >= lower_bound) & (sorted_data <= upper_bound), color='gray',
+                     alpha=0.5, label='Credible Interval: {}%'.format(cred_inter))
+    # Highlight the interval bounds
+    plt.axvline(lower_bound, color='red', linestyle='--', label='Lower Bound: {}th percentile'.format(intervals[0]))
+    plt.axvline(upper_bound, color='blue', linestyle='--', label='Upper Bound: {}th percentile'.format(intervals[2]))
+    plt.axvline(median, color='black', linestyle='--', label='Median')
+    plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.30), borderaxespad=0,ncol=2,)
+    plt.title(label = "PDF for "+ disease + "*" + str(cluster)+ " interaction")
+    savePlot_plt(fig,"PDF")
+    st.pyplot(fig)
+
+
+    #st.write("""##### {}th, 50th and {}th Percentile values are""".format(intervals[0], intervals[
+    #    2]) + ": {0:.2f}, {1:.2f} and {2:.2f}".format(*pct_val['x']))
+    #if RawD:
+    #    saveTable(pct, "raw-ecdf")
+    #    st.dataframe(pct, use_container_width=True)
+   # else:
+     ##   alt_line_chart(inferred_prob.values,pct_val,'Probability', 'Percent', 'Probability', 'Percent', "Cumulative distribution for "+title,"ecdf")
+     #   st.caption("The x-axis represents the probabilities points. The y-axis represents the proportion or fraction of data points that are less than or equal to a given value.")
+#except:
+    #    st.warning("Please select a smaller interval.")
 
 #Function to find the set of samples based on a specified subgroup
 def findSubgroup(option,feature):

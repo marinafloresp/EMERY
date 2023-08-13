@@ -6,7 +6,7 @@ from streamlit_option_menu import option_menu
 
 add_logo()
 sideBar()
-st.header("Basket*Cluster interactions")
+st.header("Disease*Cluster interactions")
 st.write("---")
 menu = option_menu(None, ["All interactions", "Selected interaction"],
     icons=["bi bi-asterisk", "bi bi-braces-asterisk"],
@@ -17,18 +17,18 @@ if "data" in st.session_state:
     analysis_data = st.session_state["Analysis"]
     #Create a Heatmap object
     heatmap = heatMap(st.session_state["saved data"],st.session_state["File Name"])
-    # Load basket selection from sidebar if found
-    #if "basket" in st.session_state:
-    #    basket = st.session_state["basket"]
+    # Load disease selection from sidebar if found
+    #if "disease" in st.session_state:
+    #    disease = st.session_state["disease"]
     # Load cluster selection from sidebar if found
     #if "cluster" in st.session_state:
     #    cluster = st.session_state["cluster"]
-    #Find samples in basket-cluster interaction
-    basket, cluster = st.session_state["basket"], st.session_state["cluster"]
-    subgroup, size = analysis_data.findInteraction(st.session_state["cluster"], st.session_state["basket"])
+    #Find samples in disease-cluster interaction
+    disease, cluster = st.session_state["disease"], st.session_state["cluster"]
+    subgroup, size = analysis_data.findInteraction(st.session_state["cluster"], st.session_state["disease"])
     if menu == "All interactions":
-        st.write("""This page shows results and information about the interactions between clusters and baskets/tissues. Below what information to 
-                 display can be selected, such as the number of samples, the number of Non-resistant samples or the inferred response in each basket*cluster interaction.""")
+        st.write("""This page shows results and information about the interactions between clusters and diseases/tissues. Below what information to 
+                 display can be selected, such as the number of samples, the number of Non-resistant samples or the inferred response in each disease*cluster interaction.""")
         #Option to select the information to display in the heatmap
         heatmap_info = st.radio("Select information to display",
                             ['Number of samples', 'Number of Non-resistant samples', "Inferred response"],
@@ -36,13 +36,13 @@ if "data" in st.session_state:
         st.write("")
         #Option to mark interactions that have a minimum number of samples
         min_num = st.slider('Mark interactions with a minimum number of samples', 0, 70)
-        st.info("\:star: : basket+cluster interactions with at least {} samples.\n"
-                "\:large_red_square: : selected basket+cluster interaction.\n".format(min_num))
+        st.info("\:star: : disease+cluster interactions with at least {} samples.\n"
+                "\:large_red_square: : selected disease+cluster interaction.\n".format(min_num))
         st.write("")
         num_samples = heatmap.heatmapNum()
         if heatmap_info == 'Number of samples':
-            st.write("#### Number of samples per basket*cluster interaction")
-            st.write("Explore the number of samples in each basket and cluster combination.")
+            st.write("#### Number of samples per disease*cluster interaction")
+            st.write("Explore the number of samples in each disease and cluster combination.")
             #Option to show data in a table
             RawD = st.checkbox("Show raw data", key="raw-data-S")
             if RawD:
@@ -50,15 +50,15 @@ if "data" in st.session_state:
                 st.dataframe(num_samples, use_container_width=True)
             else:
                 HM_NoS = heatmap.heatmap_interaction(num_samples,num_samples,"Number of samples per interaction"
-                                                         ,min_num, int(st.session_state["cluster"]), st.session_state["basket"])
-                savePlot_plt(HM_NoS, str(cluster) + "_" + basket)
+                                                         ,min_num, int(st.session_state["cluster"]), st.session_state["disease"])
+                savePlot_plt(HM_NoS, str(cluster) + "_" + disease)
                 st.pyplot(HM_NoS)
-                st.caption("The x-axis shows the levels of clusters. The y-axis shows the levels of baskets/tissues. The colour scale represents "
+                st.caption("The x-axis shows the levels of clusters. The y-axis shows the levels of diseases/tissues. The colour scale represents "
                            "the number of samples.")
         elif heatmap_info == 'Number of Non-resistant samples':
-            st.write("#### Number of samples per basket*cluster interaction non-resistant to the drug")
+            st.write("#### Number of samples per disease*cluster interaction non-resistant to the drug")
             st.write(
-                "Explore the number of samples in each basket and cluster combination that are Non-resistant to the drug.")
+                "Explore the number of samples in each disease and cluster combination that are Non-resistant to the drug.")
             # Option to show data in a table
             RawD = st.checkbox("Show raw data", key="raw-data-R")
             response_df = heatmap.heatmapResponse()
@@ -67,16 +67,16 @@ if "data" in st.session_state:
                 st.dataframe(response_df, use_container_width=True)
             else:
                 HM_response = heatmap.heatmap_interaction(response_df,num_samples,"Non-resistant samples per interaction", min_num,
-                                                          int(cluster), basket)
-                savePlot_plt(HM_response, str(cluster) + "_" + basket)
+                                                          int(cluster), disease)
+                savePlot_plt(HM_response, str(cluster) + "_" + disease)
                 st.pyplot(HM_response)
                 st.caption(
-                    "The x-axis shows the levels of clusters. The y-axis shows the levels of baskets/tissues. The colour scale represents "
+                    "The x-axis shows the levels of clusters. The y-axis shows the levels of diseases/tissues. The colour scale represents "
                     "the number of samples that are non-resistant to the drug.")
         elif heatmap_info == "Inferred response":
-            st.write("#### Inferred response probability per basket*cluster interaction.")
+            st.write("#### Inferred response probability per disease*cluster interaction.")
             st.write(
-                "Explore the inferred response probability of each tissue/basket calculated by the HBM based on observed responses.")
+                "Explore the inferred response probability of each tissue/disease calculated by the HBM based on observed responses.")
             # Option to show data in a table
             RawD = st.checkbox("Show raw data", key="raw-data-R")
             inferred_df = heatmap.HM_inferredProb()
@@ -84,80 +84,70 @@ if "data" in st.session_state:
                 saveTable(inferred_df,"inferredHM")
                 st.dataframe(inferred_df, use_container_width=True)
             else:
-                HM_inferred = heatmap.heatmap_interaction(inferred_df,num_samples,"Inferred basket*cluster interaction", min_num,
-                                                          int(cluster), basket)
+                HM_inferred = heatmap.heatmap_interaction(inferred_df,num_samples,"Inferred disease*cluster interaction", min_num,
+                                                          int(cluster), disease)
                 savePlot_plt(HM_inferred, "inferred_heatmap")
                 st.pyplot(HM_inferred)
                 st.caption(
-                    "The x-axis shows the levels of clusters. The y-axis shows the levels of baskets/tissues. The colour scale represents "
-                    "the inferred probability of response to the treatment by the basket*cluster interaction.")
-    # Subpage to show information and perform analysis on the samples included in the selected basket-cluster interaction
+                    "The x-axis shows the levels of clusters. The y-axis shows the levels of diseases/tissues. The colour scale represents "
+                    "the inferred probability of response to the treatment by the disease*cluster interaction.")
+    # Subpage to show information and perform analysis on the samples included in the selected disease-cluster interaction
     elif menu == "Selected interaction":
         st.text("")
-        st.write("In this page, results specific to the selected basket*cluster interaction can be explored.")
+        st.write("In this page, results specific to the selected disease*cluster interaction can be explored.")
         st.text("")
-        st.info("###### Samples in **cluster {}** & **{} basket**: {}".format(cluster, basket, size))
+        st.info("###### Samples in **cluster {}** & **{} disease**: {}".format(cluster, disease, size))
         st.text("")
         tab1, tab2, tab3, tab4 = st.tabs(["Overview", "PCA", "Prototypes", "Differential Expression"])
-        #Subpage with overview of the selected basket-cluster interaction if enough samples are found
+        #Subpage with overview of the selected disease-cluster interaction if enough samples are found
         with tab1:
             if len(subgroup) >0:
                 st.subheader("Response to drug")
-                st.markdown("Number of samples in **cluster {}** & **basket {}**: {} ".format(str(cluster), basket, size))
+                st.markdown("Number of samples in **cluster {}** & **disease {}**: {} ".format(str(cluster), disease, size))
                 col21, col22 = st.columns((2, 2))
                 with col21:
                     analysis_data.samplesCount(subgroup)
                 with col22:
                     analysis_data.responseSamples(subgroup)
                     st.caption("Samples ordered from most to least resistance (lower AAC response)")
-                st.subheader("ECDF")
+                st.subheader("Probability density function")
                 st.write(
-                    "The Hierarchical Bayesian model returns a single (mean) value rather than the real distribution. The Empirical Cumulative "
-                    "Distribution Function (ECDF) provides an empirical approximation of the underlying distribution of the data and assigns "
-                    "probabilities taking into account the number of samples. "
-                    )
-                st.write(
-                    "The ECDF is constructed by arranging the observed data points in ascending order and assigning a cumulative probability to each point. "
-                    "The cumulative probability for a sample is calculated as the fraction of data points that are less than or equal to that value."
-                    " The credible interval can be chosen below, which is the range containing a particular percentage of probable values.")
-                #User input option to specify credible interval for ECDF
+                    "In the second stage of the pyBasket pipeline, a hierarchical Bayesian model is used to estimate the overall probability "
+                    "of a disease-cluster interaction to be responsive to the treatment. The Probability Density Function (PDF) has been implemented to quantify the likelihood"
+                    " of observing a probability of response, caculate expected values, variances and determine the percentage of values that fall below a"
+                    " specified credible interval.")
+
+                st.write(" The credible interval can be chosen below, which is the range containing a particular percentage of probable values (shadowed in gray), e.g. for the 90% "
+                    "credible interval, the range containing the 90% of the values is shown. The bottom of the range or lower bound (red vertical line), the median (black vertical "
+                    "line) and the top of the range or upper bound (blue vertical line) are shown.")
+                   #User input option to specify credible interval for ECDF
                 cred_inter = st.number_input('Credible interval', value=90)
                 st.caption("90% credible interval shown by default")
                 # Option to show data in a table
                 RawD_ecdf = st.checkbox("Show raw data", key="raw-data-ecdf")
-                ecdf_interaction(data,basket, cluster, RawD_ecdf, cred_inter)
-                st.subheader("Transcriptional expression")
-                st.write("The heatmap below shows the expression of transcripts across the samples included in the chosen basket*cluster interaction.")
-                # Option to show data in a table
-                RawD = st.checkbox("Show raw data", key="raw-data-HM1")
-                if RawD:
-                    saveTable(subgroup, str(cluster) + "_" + basket)
-                    st.dataframe(subgroup, use_container_width=True)
-                else:
-                    heatmap2 = heatmap.heatmapTranscripts(subgroup)
-                    savePlot_plt(heatmap2, "_transcripts")
-                    st.pyplot(heatmap2)
-                    st.caption(
-                        "The x-axis represents all transcripts. The y-axis represents some of the samples in the selected basket*cluster interaction."
-                        " The colour bar represents the expression level of the transcript for each sample.")
+                ecdf_interaction(data,disease, cluster, RawD_ecdf, cred_inter)
+                st.caption("The x-axis shows the distribution of the joint probability values. The y-axis shows the density of such distribution."
+                           " The red-line is the PDF that describes the distribution of probabilities across the possible values of the variable."
+                           " The black vertical line is the median. The red vertical line is the lower bound of the credible interval. The blue vertical"
+                           " line is the upper bound of the credible interval.")
             else:
                 st.warning("Not enough samples. Please try a different combination.")
-        #Subpage with PCA on samples in the selected basket-cluster interaction if enough samples are found
+        #Subpage with PCA on samples in the selected disease-cluster interaction if enough samples are found
         with tab2:
             st.subheader("Advanced PCA")
             st.write("")
             st.write("Principal Component Analysis (PCA) is a dimensionality reduction method that enables the visualisation"
                 " of high-dimensional data. The results for PCA on the data can be explored for the samples in the selected"
-                     " basket*cluster interaction, that are grouped by resistance: Resistant vs Non-resistant.")
+                     " disease*cluster interaction, that are grouped by resistance: Resistant vs Non-resistant.")
             st.write(" ")
-            #st.write("##### PCA of samples in **cluster {}** & **basket {}**".format(cluster, basket))
+            #st.write("##### PCA of samples in **cluster {}** & **disease {}**".format(cluster, disease))
             RawD = st.checkbox("Show raw data", key="raw-data")
             analysis_data.adv_PCA(subgroup,RawD)
-        # Subpage with Prototypical samples in the selected basket-cluster interaction if enough samples are found
+        # Subpage with Prototypical samples in the selected disease-cluster interaction if enough samples are found
         with tab3:
             st.subheader("Prototypes of subgroup")
             st.write("")
-            st.write("The prototype sample of the selected basket*cluster interaction for the Resistant and the"
+            st.write("The prototype sample of the selected disease*cluster interaction for the Resistant and the"
                     " Non-resistant groups has been calculated using KMedoids. KMedoids finds the sample that is"
                      "the closest to the rest of samples in the group. ")
             try:
@@ -165,7 +155,7 @@ if "data" in st.session_state:
                 sub_prototypes.findPrototypes_sub(subgroup)
             except:
                 st.warning("Not enough samples. Please try a different combination.")
-        # Subpage with DEA with samples in the selected basket-cluster interaction if enough samples are found
+        # Subpage with DEA with samples in the selected disease-cluster interaction if enough samples are found
         with tab4:
             st.subheader("Differential expression analysis (DEA)")
             st.write("")
@@ -178,7 +168,7 @@ if "data" in st.session_state:
             try:
                 dea = DEA(data)
             except:
-                st.warning("Not enough samples in the basket*cluster interaction. Please select another combination.")
+                st.warning("Not enough samples in the disease*cluster interaction. Please select another combination.")
             col41, col42 = st.columns((2, 2))
             with col41:
                 #Option to select the type of DEA to perform
@@ -192,7 +182,7 @@ if "data" in st.session_state:
             if option == "Samples in interaction vs rest of samples":
                 st.write(" ")
                 st.subheader("Samples in interaction vs all other interactions")
-                st.write("DEA performed with the samples in the selected basket*cluster interaction vs all other samples.")
+                st.write("DEA performed with the samples in the selected disease*cluster interaction vs all other samples.")
                 if subgroup.size > 0:
                     dea.diffAnalysis_inter(subgroup,pthresh,logthresh)
                     results = dea.showResults("interaction")
@@ -202,7 +192,7 @@ if "data" in st.session_state:
                     st.write(" ")
                     st.write(" ")
                     try:
-                        dea.infoTest((cluster,basket), 'All', 'Interaction', pthresh,logthresh)
+                        dea.infoTest((cluster,disease), 'All', 'Interaction', pthresh,logthresh)
                     except:
                         st.write(" ")
                 try:
@@ -221,7 +211,7 @@ if "data" in st.session_state:
                     st.warning("Not enough samples. Please try a different combination.")
             elif option == "Within interaction: resistant vs non-resistant":
                 st.write(" ")
-                st.subheader("Resistant vs non-resistant samples within basket*cluster interaction")
+                st.subheader("Resistant vs non-resistant samples within disease*cluster interaction")
                 st.write("DEA has been performed within samples in the selected interaction and comparing Resistant vs Non-resistant samples.")
                 if subgroup.size > 0:
                     dea.diffAnalysis_response(subgroup, pthresh, logthresh)
@@ -246,7 +236,7 @@ if "data" in st.session_state:
                     st.write(" ")
                     st.write(" ")
                     try:
-                        dea.infoTest('Resistant', 'Non-resistant', (cluster,basket), pthresh,logthresh)
+                        dea.infoTest('Resistant', 'Non-resistant', (cluster,disease), pthresh,logthresh)
                     except:
                         st.write(" ")
             elif option == "Interaction vs Interaction":
@@ -258,12 +248,12 @@ if "data" in st.session_state:
                         with col43:
                             cluster_inter2 = st.selectbox("Select a cluster", data.clusters_names, key="cluster2")
                         with col44:
-                            basket_inter2 = st.selectbox("Select a basket", data.baskets_names, key="basket2")
+                            disease_inter2 = st.selectbox("Select a disease", data.disease_types, key="disease2")
                         subgroup2, size2 = analysis_data.findInteraction(cluster_inter2,
-                                                                       basket_inter2)
-                        st.info("###### Samples in **cluster {}** & **{} basket**: {}".format(cluster_inter2, basket_inter2, size))
+                                                                       disease_inter2)
+                        st.info("###### Samples in **cluster {}** & **{} disease**: {}".format(cluster_inter2, disease_inter2, size2))
                     if size2 > 5:
-                        st.subheader("Samples in ({}-cluster {}) vs samples in ({}-cluster {})".format(basket,int(cluster),basket_inter2,int(cluster_inter2)))
+                        st.subheader("Samples in ({}-cluster {}) vs samples in ({}-cluster {})".format(disease,int(cluster),disease_inter2,int(cluster_inter2)))
                         st.write(
                         "DEA has been performed with samples in the selected interaction compared to samples in a second interaction.")
                         dea.diffAnalysis_adv(subgroup,subgroup2, pthresh, logthresh)
@@ -278,12 +268,12 @@ if "data" in st.session_state:
                             st.write(" ")
                             dea.infoTranscript(feature)
                         with col54:
-                            dea.boxplot_adv(subgroup, subgroup2, basket, basket_inter2, cluster, cluster_inter2, feature)
+                            dea.boxplot_adv(subgroup, subgroup2, disease, disease_inter2, cluster, cluster_inter2, feature)
                         with col42:
                             st.write(" ")
                             st.write(" ")
                             st.write(" ")
-                            dea.infoTest((basket,int(cluster)),(basket_inter2,int(cluster_inter2)), "Comparison", pthresh, logthresh)
+                            dea.infoTest((disease,int(cluster)),(disease_inter2,int(cluster_inter2)), "Comparison", pthresh, logthresh)
 
 
 

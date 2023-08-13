@@ -56,10 +56,10 @@ if menu == "Overview":
     st.write(" ")
     st.write("##### pyBasket")
     url = "https://glasgowcompbio.github.io/pyBasket/"
-    st.write("pyBasket is a two-stage approach developed by other researchers that incorporates omics data into basket trial response prediction from cancer patients."
+    st.write("pyBasket is a two-stage approach developed by other researchers that incorporates omics data into basket trial response prediction from patients."
              " In the first stage, patients are clustered based on their omics profile using K-means clustering. "
-             " These clusters assignments are used within a hierarchical Bayesian model along with basket response rates to "
-             " estimate overall response rates and predict interaction terms between baskets and clusters. Further information about the pyBasket model can be found here: [link](%s)" % url)
+             " These clusters assignments are used within a hierarchical Bayesian model along with response rates from different types of disease to "
+             " estimate overall response rates and predict interaction terms between each type of disease and cluster. Further information about the pyBasket model can be found here: [link](%s)" % url)
     st.write("---")
     with st.expander("##### Basic steps to use EMERY"):
         st.write(" ")
@@ -82,9 +82,9 @@ if menu == "Overview":
                 "Navigate to the _Data Exploration_ subpage located in the left sidebar. Find more general information about the samples, the predicted treatment response rates and "
                 "perform Dimensionality reduction and Differential Expression Analysis.")
             st.write(" ")
-            st.write("##### :five: Select and analyse a basket*cluster interaction")
-            st.write("In the left sidebar, select a cluster number and a basket/tissue. Samples that fall in this interaction will be selected. "
-                     "Navigate to the _Basket-Cluster_Interactions_ subpage located in the left sidebar to further explore results from the samples included in the selected basket-cluster interaction.")
+            st.write("##### :five: Select and analyse a disease*cluster interaction")
+            st.write("In the left sidebar, select a cluster number and a disease type. Samples that fall in this interaction will be selected. "
+                     "Navigate to the _Disease-Cluster_Interactions_ subpage located in the left sidebar to further explore results from the samples included in the selected disease-cluster interaction.")
             st.write(" ")
             st.write("##### :six: Use interpretable ML methods ")
             st.write(
@@ -128,7 +128,7 @@ if menu == "Trial information":
         st.subheader("Drug information")
         name = st.session_state["File Name"].split('_')
         drug = name[2]
-        st.write("#### The drug used in this basket trial was: **{}**".format(drug))
+        st.write("#### The drug used in this clinical trial was: **{}**".format(drug))
         st.write("Further information about the drug used in the pyBasket analysis.")
         accession_num = "0"
         if drug == "Erlotinib":

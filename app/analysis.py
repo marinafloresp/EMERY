@@ -23,16 +23,16 @@ class Analysis(Data):
         self.pca_adv_var = None
         self.num_samples = None
 
-    #Function to find the set of samples in a basket-cluster interaction
-    def findInteraction(self,cluster,basket):
+    #Function to find the set of samples in a disease-cluster interaction
+    def findInteraction(self,cluster,disease):
         transcripts = self.expr_df_selected
-        sub_patients = self.patient_df[(self.patient_df['cluster_number'] == cluster) & (self.patient_df['tissues'] == basket)]
+        sub_patients = self.patient_df[(self.patient_df['cluster_number'] == cluster) & (self.patient_df['tissues'] == disease)]
         indexes = list(sub_patients.index.values)
         sub_transcript = transcripts.loc[indexes]
         num = len(sub_transcript)
         return sub_transcript, num
 
-    #Function to show the number of resistant/non-resistant samples in a basket-cluster interaction
+    #Function to show the number of resistant/non-resistant samples in a disease-cluster interaction
     def samplesCount(self,subgroup):
         fulldf = pd.merge(self.patient_df, subgroup, left_index=True, right_index=True)
         df_grouped = fulldf.groupby(['resistance']).size().reset_index(name='Count')
@@ -40,7 +40,7 @@ class Analysis(Data):
                         "NS_Inter", ["resistance", 'Count'])
         st.caption("Number of resistant and non-resistant samples in the interaction.")
 
-    #Function to show information related to the samples in a basket-cluster interaction
+    #Function to show information related to the samples in a disease-cluster interaction
     def responseSamples(self,subgroup):
         fulldf = pd.merge(self.patient_df, subgroup, left_index=True, right_index=True)
         fulldf = fulldf[['tissues', 'responses', 'cluster_number', 'resistance']]
@@ -110,7 +110,7 @@ class Analysis(Data):
         else:
             Analysis.plot_PCA(self, feature, adv=False)
 
-    #Function to perform PCA on the samples in the selected basket-cluster interaction
+    #Function to perform PCA on the samples in the selected disease-cluster interaction
     def advanced_PCA(self, df):
         y = self.patient_df["resistance"]
         x_scaled = StandardScaler().fit_transform(df)
@@ -146,7 +146,7 @@ class Analysis(Data):
             st.warning("Not enough samples. Please try a different combination.")
 
 """
-subclass of Analysis: heatMap: creates Analysis sub-object to show and filter information shown in the heatmap with interactions between clusters and baskets
+subclass of Analysis: heatMap: creates Analysis sub-object to show and filter information shown in the heatmap with interactions between clusters and disease
 Input: an initialised Analaysis object.
 """
 class heatMap(Analysis):
@@ -157,19 +157,19 @@ class heatMap(Analysis):
     #Function to return dataframe with information about the number of samples
     def heatmapNum(self):
         clusters = self.clusters_names
-        baskets = self.baskets_names
+        diseases = self.disease_types
         data = []
-        for basket in baskets:
+        for disease in diseases:
             clus = []
             for cluster in clusters:
-                subgroup, num = self.findInteraction(cluster,basket)
+                subgroup, num = self.findInteraction(cluster,disease)
                 clus.append(num)
             data.append(clus)
-        df = pd.DataFrame(data, baskets,clusters)
+        df = pd.DataFrame(data,diseases,clusters)
         self.num_samples = df
         return df
 
-    #Function to show heatmap with the transcriptional expression of samples in the selected basket-cluster interaction
+    #Function to show heatmap with the transcriptional expression of samples in the selected disease-cluster interaction
     def heatmapTranscripts(self,df):
         scaler = StandardScaler()
         df_scaled = pd.DataFrame(scaler.fit_transform(df), columns=df.columns)
@@ -190,36 +190,36 @@ class heatMap(Analysis):
     #Function to return dataframe with information about the number of resistant samples
     def heatmapResponse(self):
         clusters = self.clusters_names
-        baskets = self.baskets_names
+        diseases = self.disease_types
         data = []
-        for basket in baskets:
+        for disease in diseases:
             response = []
             for cluster in clusters:
                 sub = len(self.patient_df[(self.patient_df['cluster_number'] == cluster) & (
-                            self.patient_df['tissues'] == basket) & (self.patient_df['resistance'] == "Non-resistant")])
+                            self.patient_df['disease'] == disease) & (self.patient_df['resistance'] == "Non-resistant")])
                 response.append(sub)
             data.append(response)
-        df = pd.DataFrame(data, baskets, clusters)
+        df = pd.DataFrame(data, diseases, clusters)
         return df
 
     #Function to get the mean inferred joint probability from the pyBasket pipeline
     def HM_inferredProb(self):
-        basket_coords, cluster_coords = self.baskets_names,self.clusters_names
+        disease_coords, cluster_coords = self.disease_types,self.clusters_names
         stacked = self.stacked_posterior
         inferred_mat = np.mean(stacked.joint_p.values, axis=2)
-        inferred_df = pd.DataFrame(inferred_mat, index=basket_coords, columns=cluster_coords)
+        inferred_df = pd.DataFrame(inferred_mat, index=disease_coords, columns=cluster_coords)
         return inferred_df
 
-    #Function to show interactions heatmap with the chosen information, mark the selected basket-cluster interaction and filter interactions with
+    #Function to show interactions heatmap with the chosen information, mark the selected disease-cluster interaction and filter interactions with
     #num_Sum number of samples
     def heatmap_interaction(self, df,mark_num,title, num_Sum, x_highlight=None, y_highlight=None):
         x_highlight = self.clusters_names.index(x_highlight)
-        y_highlight = self.baskets_names.index(y_highlight)
+        y_highlight = self.disease_types.index(y_highlight)
         fig = plt.figure(figsize=(10, 10))
         ax = sns.heatmap(data=df, cmap="coolwarm", yticklabels='auto')
         plt.title(title)
         plt.xlabel('Clusters')
-        plt.ylabel('Baskets')
+        plt.ylabel('Disease type')
         plt.yticks(fontsize=8)
         for i, c in enumerate(df):
             for j, v in enumerate(mark_num[c]):
