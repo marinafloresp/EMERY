@@ -178,7 +178,6 @@ def alt_scatterplot(df, x, y, title_x, title_y,main_title,save,tooltip ):
 #Interactive boxplot
 def alt_boxplot(df, x, y, num_cols, title_x, title_y, colors,main_title,save):
     palette = colours(num_cols,x)
-    print(palette)
     base = alt.Chart(df).mark_boxplot(extent='min-max', ticks=True, size=50).encode(
         x=alt.X(x+":N", title=title_x),
         y=alt.Y(y, title=title_y), color=alt.Color(colors + ':N')
