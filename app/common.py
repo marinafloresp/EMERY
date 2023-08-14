@@ -25,11 +25,13 @@ def readPickle(pick_file):
         raise
 
 #Sets the number of colours for a plot's palette depending on number of groups
-def colours(num):
+def colours(num, resp):
     if num > 2:
         palette = sns.color_palette("colorblind", num).as_hex()
-    else:
+    elif num<3 and resp == "resistance":
         palette = ['#02c14d','#e50000']
+    else:
+        palette = ["#F72585", "#4CC9F0"]
     return palette
 
 #Adds EMERY logo in the sidebar
@@ -139,7 +141,7 @@ def alt_line_chart(df, df2, x, y, title_x, title_y, main_title,save):
 
 #Interactive horizontal bar chart
 def alt_hor_barplot(df, x, y, num_cols, title_x, title_y, colors,main_title,save):
-    palette = colours(num_cols)
+    palette = colours(num_cols,x)
     base = alt.Chart(df).mark_bar().encode(
         alt.X(x, title=title_x),
         alt.Y(y+':N', title=title_y).sort('-x'), alt.Color(colors +':N')
@@ -152,7 +154,7 @@ def alt_hor_barplot(df, x, y, num_cols, title_x, title_y, colors,main_title,save
 
 #Interactive vertical bar chart
 def alt_ver_barplot(df, x, y, num_cols, title_x, title_y, colors,main_title,save, tooltip):
-    palette = colours(num_cols)
+    palette = colours(num_cols,x)
     base = alt.Chart(df).mark_bar(size=40).encode(
         alt.X(x +':N', title=title_x),
         alt.Y(y+':Q', title=title_y,axis=alt.Axis(grid=False)), alt.Color(colors+':N'), tooltip = tooltip
@@ -175,9 +177,10 @@ def alt_scatterplot(df, x, y, title_x, title_y,main_title,save,tooltip ):
 
 #Interactive boxplot
 def alt_boxplot(df, x, y, num_cols, title_x, title_y, colors,main_title,save):
-    palette = colours(num_cols)
-    base = alt.Chart(df, title="AAC response").mark_boxplot(extent='min-max', ticks=True, size=50).encode(
-        x=alt.X(x, title=title_x),
+    palette = colours(num_cols,x)
+    print(palette)
+    base = alt.Chart(df).mark_boxplot(extent='min-max', ticks=True, size=50).encode(
+        x=alt.X(x+":N", title=title_x),
         y=alt.Y(y, title=title_y), color=alt.Color(colors + ':N')
     ).properties(height=650, width = 600, title = main_title).configure_range(category=alt.RangeScheme(palette))
     savePlot(base, save)

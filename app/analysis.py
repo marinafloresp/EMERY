@@ -79,9 +79,9 @@ class Analysis(Data):
         df = self.pca_adv if adv == True else self.pca_df
         df = df.reset_index()
         if feature == "resistance":
-            palette = colours(2)
+            palette = colours(2, feature)
         else:
-            palette = colours(25)
+            palette = colours(25, feature)
         base = alt.Chart(df, title = "Principal Component Analysis").mark_circle(size=60).encode(
             x='PC1',
             y='PC2',

@@ -61,7 +61,7 @@ class Prototypes():
     #Function to plot pseudo-medoids found
     def plotMedoids(self,X,sample_medoids, feature):
         labels = np.unique(feature)
-        palette = colours(len(np.unique(feature)))
+        palette = colours(len(np.unique(feature)),feature)
         df = pd.DataFrame({'X': X[:, 0], 'Y': X[:, 1], 'class':feature})
         df2 = self.patient_df.reset_index()
         df = pd.merge(df, df2, left_index=True, right_index=True)
@@ -312,10 +312,10 @@ class DEA():
     # Function to show in a boxplot differences in expression between two groups being compared
     def boxplot_resp(self, subgroup, transcript):
         DEA.splitResponses(self, subgroup)
-        df1 = pd.DataFrame({transcript : self.df_group1[transcript], "class" : self.df_group1["resistance"]})
-        df2 = pd.DataFrame({transcript : self.df_group2[transcript], "class" : self.df_group2["resistance"]})
+        df1 = pd.DataFrame({transcript : self.df_group1[transcript], "resistance" : self.df_group1["resistance"]})
+        df2 = pd.DataFrame({transcript : self.df_group2[transcript], "resistance" : self.df_group2["resistance"]})
         full_df = pd.concat([df1, df2])
-        alt_boxplot(full_df, "class", transcript, 2, "Group", "Expression level", "class", "Expression level of transcript {}".format(transcript), "DEA"+transcript)
+        alt_boxplot(full_df, "resistance", transcript, 2, "Group", "Expression level", "resistance", "Expression level of transcript {}".format(transcript), "DEA"+transcript)
         st.caption(
         "The x-axis represents the two groups being compared. The y-axis is the expression level of the chosen transcript.")
 
@@ -323,10 +323,10 @@ class DEA():
     def boxplot(self, option1, option2, feature, transcript):
         self.df_group1 = findSubgroup(option1, feature)
         self.df_group2 = findSubgroup(option2, feature)
-        df1 = pd.DataFrame({transcript: self.df_group1[transcript], "Group": option1})
-        df2 = pd.DataFrame({transcript: self.df_group2[transcript], "Group": option2})
+        df1 = pd.DataFrame({transcript: self.df_group1[transcript], feature: option1})
+        df2 = pd.DataFrame({transcript: self.df_group2[transcript], feature: option2})
         full_df = pd.concat([df1, df2])
-        alt_boxplot(full_df, "Group:N", transcript+':Q', 2, "Group", "Expression level", "Group",
+        alt_boxplot(full_df, feature, transcript+':Q', 2, "Group", "Expression level", feature,
                     "Expression level of transcript {}".format(transcript), "DEA_" + transcript)
         st.caption("The x-axis represents the two groups being compared. The y-axis is the expression level of the chosen transcript.")
 

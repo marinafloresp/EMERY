@@ -141,7 +141,7 @@ class Data():
                             "AAC")
                 st.caption(
                     "The x-axis shows the levels of the grouping chosen (clusters or disease types). The y-axis shows the real AAC response to the drug."
-                    " Within levels, the AAC response by the non-resistant (blue) or resistant (red) samples to treatment are shown.")
+                    " Within levels, the AAC response by the non-resistant (green) or resistant (red) samples to treatment are shown.")
             else:
                 alt_boxplot(self.patient_df, feature, "responses", size, x_lab, "AAC response", feature, "AAC response", "AAC")
                 st.caption("The x-axis shows the levels of the grouping chosen (clusters or disease types). The y-axis shows the real AAC response to the drug.")
