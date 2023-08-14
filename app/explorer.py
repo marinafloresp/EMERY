@@ -170,7 +170,7 @@ class Data():
             df = pd.DataFrame({'mean probability': inferred_cluster, 'cluster': clusters})
             feature = 'cluster'
         palette = colours(len_colors)
-        intervals = [(100 - cred_inter - 5) / 100, 0.5, (cred_inter + 5) / 100]
+        intervals = [(50 - (cred_inter/2)) / 100, 0.5, (50+(cred_inter/2)) / 100]
         interval_data = (
             df.groupby(feature)['mean probability']
             .quantile(intervals)
@@ -178,6 +178,8 @@ class Data():
             .rename(columns={'level_1': 'Percentile th', 'mean probability': 'Range'})
         )
         interval_data['Percentile th'] = interval_data['Percentile th']*100
+        intervals =[int(x*100) for x in intervals]
+        st.write("##### Percentiles of chosen credible interval are: {}th (lower bound/min of range), {}th (median) and {}th (upper bound/max of range".format(*intervals))
         if RawD_prob:
             saveTable(interval_data, "raw-prob")
             st.dataframe(interval_data, use_container_width=True)

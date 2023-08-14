@@ -85,7 +85,6 @@ if "data" in st.session_state:
                  " By choosing a credible interval below, the range containing a particular percentage of probable values is shown. "
                  "This range is delimited by the percentiles below and above the credible interval and the median. Percentiles represent the value below "
                  "which a given percentage of probabilities fall, e.g. a 5th percentile is the value below which 5% of the data points fall.")
-
         col1, col2 = st.columns((2,2))
         with col1:
             # Option to select level of grouping: clusters or baskets
@@ -93,6 +92,7 @@ if "data" in st.session_state:
                                         key="option-page2")
         with col2:
             cred_inter = st.number_input('Credible interval', value=90)
+
             st.caption("90% credible interval shown by default")
         # Option to show data in a table format
         RawD_prob = st.checkbox("Show raw data", key="raw-data-prob")

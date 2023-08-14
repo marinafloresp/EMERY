@@ -203,7 +203,7 @@ def ecdf(data,intervals):
 
 #Applies ECDF for samples in a chosen disease-cluster interaction (disease-Cluster interaction-Selected interaction page)
 def ecdf_interaction(data,disease,cluster,RawD, cred_inter):
-    intervals = np.array([100-cred_inter-5, 50, cred_inter+5])
+    intervals = [50 - round(cred_inter/2), 50, 50+round(cred_inter/2)]
     disease_index = data.disease_types.index(disease)
     cluster_index = data.clusters_names.index(cluster)
     inferred_prob = data.stacked_posterior.joint_p[disease_index][cluster_index]
@@ -216,6 +216,9 @@ def ecdf_interaction(data,disease,cluster,RawD, cred_inter):
     lower_bound = np.percentile(inferred_prob.values, intervals[0])
     median = np.percentile(inferred_prob.values, intervals[1])
     upper_bound = np.percentile(inferred_prob.values, intervals[2])
+    st.write(
+        "##### Percentiles of chosen credible interval are: {}th (lower bound/min of range), {}th (median) and {}th (upper bound/max of range".format(
+            *intervals))
     fig = plt.figure(figsize=(10,6))
     plt.plot(sorted_data, pdf,color='red', label='Estimated PDF')
     plt.hist(inferred_prob.values, density=True, bins=30, alpha=0.5, label='Probability density')
