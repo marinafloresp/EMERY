@@ -101,7 +101,7 @@ if "data" in st.session_state:
         tab1, tab2, tab3, tab4 = st.tabs(["Overview", "PCA", "Prototypes", "Differential Expression"])
         #Subpage with overview of the selected disease-cluster interaction if enough samples are found
         with tab1:
-            if len(subgroup) >0:
+            if len(subgroup) >1:
                 st.subheader("Response to drug")
                 st.markdown("Number of samples in **cluster {}** & **disease {}**: {} ".format(str(cluster), disease, size))
                 col21, col22 = st.columns((2, 2))
@@ -183,11 +183,11 @@ if "data" in st.session_state:
                 st.write(" ")
                 st.subheader("Samples in interaction vs all other interactions")
                 st.write("DEA performed with the samples in the selected disease*cluster interaction vs all other samples.")
-                if subgroup.size > 0:
+                if size > 2:
                     dea.diffAnalysis_inter(subgroup,pthresh,logthresh)
                     results = dea.showResults("interaction")
                 else:
-                    st.warning("Not enough samples. Please try a different combination.")
+                    st.warning("Not enough samples (minimum 3 samples). Please try a different combination.")
                 with col42:
                     st.write(" ")
                     st.write(" ")
@@ -213,7 +213,7 @@ if "data" in st.session_state:
                 st.write(" ")
                 st.subheader("Resistant vs non-resistant samples within disease*cluster interaction")
                 st.write("DEA has been performed within samples in the selected interaction and comparing Resistant vs Non-resistant samples.")
-                if subgroup.size > 0:
+                if size > 3:
                     dea.diffAnalysis_response(subgroup, pthresh, logthresh)
                     try:
                         results = dea.showResults("interaction")
@@ -231,7 +231,7 @@ if "data" in st.session_state:
                     except:
                         st.warning("Not enough samples. Please try a different combination.")
                 else:
-                    st.warning("Not enough samples. Please try a different combination.")
+                    st.warning("Not enough samples (minimum 4 samples). Please try a different combination.")
                 with col42:
                     st.write(" ")
                     st.write(" ")
@@ -241,7 +241,7 @@ if "data" in st.session_state:
                         st.write(" ")
             elif option == "Interaction vs Interaction":
                 st.write(" ")
-                if subgroup.size > 0:
+                if subgroup.size > 3:
                     with col41:
                         st.write("##### Select a second interaction")
                         col43, col44 = st.columns((2,2))
@@ -252,7 +252,7 @@ if "data" in st.session_state:
                         subgroup2, size2 = analysis_data.findInteraction(cluster_inter2,
                                                                        disease_inter2)
                         st.info("###### Samples in **cluster {}** & **{} disease**: {}".format(cluster_inter2, disease_inter2, size2))
-                    if size2 > 5:
+                    if size2 > 3:
                         st.subheader("Samples in ({}-cluster {}) vs samples in ({}-cluster {})".format(disease,int(cluster),disease_inter2,int(cluster_inter2)))
                         st.write(
                         "DEA has been performed with samples in the selected interaction compared to samples in a second interaction.")
@@ -274,8 +274,10 @@ if "data" in st.session_state:
                             st.write(" ")
                             st.write(" ")
                             dea.infoTest((disease,int(cluster)),(disease_inter2,int(cluster_inter2)), "Comparison", pthresh, logthresh)
-
-
+                    else:
+                        st.warning("Not enough samples in second interaction selected (minimum 4 samples). Please try a different combination.")
+                else:
+                    st.warning("Not enough samples in first interaction selected (minimum 4 samples). Please try a different combination.")
 
 
 
