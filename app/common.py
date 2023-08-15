@@ -154,7 +154,7 @@ def alt_hor_barplot(df, x, y, num_cols, title_x, title_y, colors,main_title,save
 
 #Interactive vertical bar chart
 def alt_ver_barplot(df, x, y, num_cols, title_x, title_y, colors,main_title,save, tooltip):
-    palette = colours(num_cols,x)
+    palette = colours(num_cols,colors)
     base = alt.Chart(df).mark_bar(size=40).encode(
         alt.X(x +':N', title=title_x),
         alt.Y(y+':Q', title=title_y,axis=alt.Axis(grid=False)), alt.Color(colors+':N'), tooltip = tooltip
@@ -166,7 +166,7 @@ def alt_ver_barplot(df, x, y, num_cols, title_x, title_y, colors,main_title,save
     st.altair_chart(base, theme="streamlit", use_container_width=True)
 
 #Interactive scatterplot
-def alt_scatterplot(df, x, y, title_x, title_y,main_title,save,tooltip ):
+def alt_scatterplot(df, x, y, title_x, title_y,main_title,save,tooltip):
     base = alt.Chart(df).mark_circle(size=100).encode(
         x=alt.Y(x, title=title_x),
         y=alt.Y(y+':Q', title=title_y),
@@ -177,7 +177,7 @@ def alt_scatterplot(df, x, y, title_x, title_y,main_title,save,tooltip ):
 
 #Interactive boxplot
 def alt_boxplot(df, x, y, num_cols, title_x, title_y, colors,main_title,save):
-    palette = colours(num_cols,x)
+    palette = colours(num_cols,colors)
     base = alt.Chart(df).mark_boxplot(extent='min-max', ticks=True, size=50).encode(
         x=alt.X(x+":N", title=title_x),
         y=alt.Y(y, title=title_y), color=alt.Color(colors + ':N')

@@ -78,7 +78,7 @@ class Data():
         size = len(np.unique(self.patient_df[feature]))
         if RD:
             df_grouped = self.patient_df.groupby(["resistance", feature]).size().reset_index(name='Count')
-            alt_ver_barplot(df_grouped, feature, 'Count', 2, x_lab, "Number of samples", "resistant", title, "NumSamples",
+            alt_ver_barplot(df_grouped, feature, 'Count', 2, x_lab, "Number of samples", "resistance", title, "NumSamples",
                             ["resistance", feature, 'Count'])
             st.caption("The x-axis shows the levels of the grouping chosen (clusters or disease types). The y-axis shows the number of samples."
                        " Within levels, the number of samples that are Non-resistant (green) or Resistant (red) to treatment are shown.")
@@ -150,7 +150,7 @@ class Data():
     def barInferredProb(self, feature,RawD_prob,cred_inter):
         stacked = self.stacked_posterior
         if feature == 'baskets':
-            len_colors = len(self.disease_types)
+            len_colours = len(self.disease_types)
             inferred_basket = stacked.basket_p.values
             baskets = []
             for item in self.disease_types:
@@ -160,7 +160,7 @@ class Data():
             df = pd.DataFrame({'mean probability': inferred_basket, 'disease': baskets})
             feature = 'disease'
         elif feature == "clusters":
-            len_colors = len(self.clusters_names)
+            len_colours = len(self.clusters_names)
             inferred_cluster = stacked.cluster_p.values
             clusters = []
             for item in self.clusters_names:
@@ -169,7 +169,7 @@ class Data():
             inferred_cluster = inferred_cluster.flatten()
             df = pd.DataFrame({'mean probability': inferred_cluster, 'cluster': clusters})
             feature = 'cluster'
-        palette = colours(len_colors)
+        palette = colours(len_colours, feature)
         intervals = [(50 - (cred_inter/2)) / 100, 0.5, (50+(cred_inter/2)) / 100]
         interval_data = (
             df.groupby(feature)['mean probability']
