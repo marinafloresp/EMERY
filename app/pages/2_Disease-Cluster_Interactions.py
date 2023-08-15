@@ -6,7 +6,7 @@ from streamlit_option_menu import option_menu
 
 add_logo()
 sideBar()
-st.header("Disease*Cluster interactions")
+st.header("Disease-Cluster interactions")
 st.write("---")
 menu = option_menu(None, ["All interactions", "Selected interaction"],
     icons=["bi bi-asterisk", "bi bi-braces-asterisk"],

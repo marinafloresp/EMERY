@@ -119,8 +119,7 @@ class Data():
     #Display AAC response statistics in a table format
     def raw_data_AAC(self,feature,x_variable):
         raw_count = self.patient_df[[feature, "responses"]].groupby(feature).mean()
-        default_value = 0
-        raw_count['SD'] = self.patient_df[[feature, "responses"]].groupby(feature).std().fillna(default_value)
+        raw_count['SD'] = self.patient_df[[feature, "responses"]].groupby(feature).std().fillna(0)
         raw_count['Median'] = self.patient_df[[feature, "responses"]].groupby(feature).median()
         raw_count['Min'] = self.patient_df[[feature, "responses"]].groupby(feature).min()
         raw_count['Max'] = self.patient_df[[feature, "responses"]].groupby(feature).max()
@@ -171,6 +170,13 @@ class Data():
             feature = 'cluster'
         palette = colours(len_colours, feature)
         intervals = [(50 - (cred_inter/2)) / 100, 0.5, (50+(cred_inter/2)) / 100]
+        summary = df.groupby(feature).mean()
+        summary['SD'] = df.groupby(feature).std().fillna(0)
+        summary['Median'] = df.groupby(feature).median()
+        summary['Min'] = df.groupby(feature).min()
+        summary['Max'] = df.groupby(feature).max()
+        summary = summary.reset_index()
+        summary.columns = [feature, "Mean", "SD", "Median", "Min", "Max"]
         interval_data = (
             df.groupby(feature)['mean probability']
             .quantile(intervals)
@@ -182,7 +188,10 @@ class Data():
         st.write("##### Percentiles of chosen credible interval are: {}th (lower bound/min of range), {}th (median) and {}th (upper bound/max of range".format(*intervals))
         if RawD_prob:
             saveTable(interval_data, "raw-prob")
+            st.write("##### Results from applying 90% credible interval and percentiles.")
             st.dataframe(interval_data, use_container_width=True)
+            st.write("##### Summary of inferred response probabilities")
+            st.dataframe(summary, use_container_width=True)
         else:
             base = alt.Chart(interval_data, title="Inferred response probabilities").mark_boxplot(ticks=True, size=50).encode(
                 x=feature +':N',

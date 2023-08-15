@@ -130,7 +130,7 @@ if "data" in st.session_state:
             st.write("The partial dependence plot (PDP) calculated by SHAP shows "
                      "the marginal effect that one or two features, that might interact with each other,"
                      " have on the predictions made by the ML model (the predicted AAC response to the drug).  ")
-            features = shapFI.SHAP_results(values,len(values))
+            features = shapFI.SHAP_results(values,len(values[0]))
             #Option to select transcript
             transcript_PDP = st.selectbox("Select feature/transcript", features['Transcript'], key="transcript_PDP")
             st.caption("values ordered by decreasing importance by SHAP")
