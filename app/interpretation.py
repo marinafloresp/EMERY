@@ -61,8 +61,9 @@ class Prototypes():
     #Function to plot pseudo-medoids found
     def plotMedoids(self,X,sample_medoids, feature):
         labels = np.unique(feature)
-        palette = colours(len(np.unique(feature)),feature)
         df = pd.DataFrame({'X': X[:, 0], 'Y': X[:, 1], 'class':feature})
+        resp = 'resistance' if len(labels) <3 else 'class'
+        palette = colours(len(np.unique(feature)), resp)
         df2 = self.patient_df.reset_index()
         df = pd.merge(df, df2, left_index=True, right_index=True)
         df3 = pd.merge(df, sample_medoids, left_index=True, right_index=True)
