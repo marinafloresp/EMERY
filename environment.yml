@@ -2,8 +2,8 @@ name: EMERY
 channels:
   - defaults
 dependencies:
-  - python==3.9
-  - numpy<1.24
+  - python=3.9
+  - numpy=1.23
   - pandas
   - scipy
   - matplotlib
@@ -18,11 +18,11 @@ dependencies:
   - pytest
   - pytest-cov
   - statsmodels
-  - pip
   - streamlit
   - mpld3
   - shap
   - altair
+  - pip
   - pip:
     - pymc
     - arviz
