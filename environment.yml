@@ -2,8 +2,8 @@ name: EMERY2
 channels:
   - defaults
 dependencies:
-  - python==3.9
-  - numpy<1.24
+  - python=3.9
+  - numpy=1.23
   - pandas
   - scipy
   - matplotlib
