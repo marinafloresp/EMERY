@@ -90,7 +90,7 @@ class Analysis(Data):
         category=alt.RangeScheme(palette))
         savePlot(base, "PCA")
         st.altair_chart(base, theme="streamlit", use_container_width=True)
-        st.caption("Axis show the first and second principal components (PC1, PC2) that capture the most variation in the expression level of transcripts."
+        st.caption("Axis show the first and second principal components (PC1, PC2) that capture the most variation of the expression level of transcripts."
                    "Position of each data point is the scores on PC1 and PC2.")
 
     #Function to show PCA results in a plot or in a table (if RawD is True)

@@ -22,8 +22,8 @@ if "data" in st.session_state:
     if menu == "Samples information":
         st.subheader("Number of samples")
         st.write(
-            "The number of samples can be shown either by cluster or disease type. The number of Resistant and Non-resistant"
-            " samples within groups can also be explored. ")
+            "The number of samples in each cluster or disease type is shown below. Using 'Group by resistance' option,"
+            "samples will be coloured based on their resistance against the drug: Resistant (red) and Non-resistant (green).")
         st.write(" ")
         col11, col12 = st.columns((1, 1))
         with col11:
@@ -50,12 +50,13 @@ if "data" in st.session_state:
         st.subheader("AAC response")
         st.write(
             "The Area Above the Curve (AAC) is a measure used to analyse drug response and quantify the effect of"
-            " a drug over a period of time. In the context of the GDSC dataset, the AAC is the measure of the cell"
+            " a drug over a period of time. In the context of the Genomics of Drug Senstivity in Cancer (GDSC) project, "
+            "the AAC drug response is the measure of the cell"
             " or cell line overall survival in response to the drug: the larger the AAC metric, the more resistance to the"
-            " drug is shown."
+            " drug is shown. A larger AAC response implies a larger resistance to the drug."
             " "
-            "The AAC values per cluster o disease type is shown, as well as within these for Resistant and Non-"
-            "resistant samples.")
+            "The AAC response or resistance values per cluster o disease type are shown below, as well as within groups for Resistant (red) and Non-"
+            "resistant (green) samples.")
         st.write(" ")
         col21, col22 = st.columns((1, 1))
         with col21:
@@ -81,9 +82,9 @@ if "data" in st.session_state:
     elif menu == "pyBasket results":
         st.subheader("Inferred response probability distribution")
         st.write("In the second stage of the pyBasket pipeline, a hierarchical Bayesian model is used to estimate the"
-                 " overall probability distribution of each cluster or disease type to be responsive to the treatment."
-                 " By choosing a credible interval below, the range containing a particular percentage of probable values is shown. "
-                 "This range is delimited by the percentiles below and above the credible interval and the median. Percentiles represent the value below "
+                 " overall response probability distribution of each cluster or disease type."
+                 " By choosing below a credible interval, the range containing a particular percentage of probable values is shown in the plot. "
+                 "This range is delimited by the percentiles below (lower bound) and above (upper bound) the credible interval and the median (50th). Percentiles represent the value below "
                  "which a given percentage of probabilities fall, e.g. a 5th percentile is the value below which 5% of the data points fall.")
         col1, col2 = st.columns((2,2))
         with col1:
@@ -96,7 +97,6 @@ if "data" in st.session_state:
             st.caption("90% credible interval shown by default")
         # Option to show data in a table format
         RawD_prob = st.checkbox("Show raw data", key="raw-data-prob")
-
         if option_page2 == 'Disease types':
             data.barInferredProb("baskets",RawD_prob,cred_inter)
         elif option_page2 == "Clusters":
@@ -110,9 +110,9 @@ if "data" in st.session_state:
             st.write("The goal of dimensionality reduction is to project high-dimensionality data to a lower "
                      "dimensional subspace while preserving the essence of the data and the maximum amount of information.")
             st.write("Principal Component Analysis (PCA) is a dimensionality reduction method that enables the visualisation"
-                     " of high-dimensional data capturing as much as possible of its variation.  "
-                     "The results for PCA on the data can be explored for the data grouped by "
-                     "clusters, disease type or response.")
+                     " of high-dimensional data as well as capturing as much as possible of its variation. "
+                     "The results for PCA using 5 Principal Components on the data can be explored by selecting a variable to colour cell lines or samples by: "
+                     "clusters, disease type or resistance.")
             st.write(" ")
             # Option to select level of grouping: clusters, baskets or response
             option_PCA = st.selectbox("Select how to group samples", ('Clusters', 'Disease types', 'Resistance'), key="PCA")
@@ -128,9 +128,9 @@ if "data" in st.session_state:
         with tab22:
             st.subheader("Prototypes")
             st.write("The prototypical sample of each cluster, disease type or pattern of response has been calculated using"
-                     " KMedoids. KMedoids is a partitioning technique that finds the sample (medoid or prototype)"
+                     " K-Medoids. K-Medoids is a partitioning technique that finds the sample (medoid or prototype)"
                     " that is the closest to the rest of samples in the same group. The dimension of the expression level of transcripts"
-                     " has been reduced and plotted using Principal Component Analysis (PCA). ")
+                     " has been reduced and plotted using Principal Component Analysis (PCA) as described in the 'Dimensionality reduction' tab.")
             st.write(" ")
             #Option to select level of grouping: clusters, baskets or response
             option_prototype = st.selectbox("Select how to group samples", ('Clusters', 'Disease types'), key="Prototypes")
@@ -142,8 +142,8 @@ if "data" in st.session_state:
             st.write(" ")
             st.write("The goal of Differential Expression Analysis (DEA) is to discover whether the expression "
                      "level of a feature (gene or transcript) is quantitatively different between experimental "
-                     "groups or conditions.")
-            st.write("T-test for the means of each feature in two independent groups or conditions is calculated."
+                     "groups or conditions. Below, any two clusters, types of disease or resistance groups can be compared. ")
+            st.write("The T-test for the means of each feature in two independent groups or conditions is calculated."
                      "The null hypothesis is that the feature has identical average values across conditions.")
             st.write(" ")
             col51, col52 = st.columns((2, 2))
@@ -172,6 +172,7 @@ if "data" in st.session_state:
                     #User input for log2 fold change threshold
                     logthresh = st.number_input('log2 FC threshold for significance (1 by default)', value=1.0)
                 dea = DEA(data)
+                st.write("#### DEA on {} compared: {} vs {}".format(option,groups[0], groups[1]))
                 dea.diffAnalysis_simple(groups[0],groups[1],feature,pthresh,logthresh)
                 results = dea.showResults(feature)
                 with col52:

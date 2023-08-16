@@ -35,6 +35,7 @@ st.write("---")
 menu = option_menu(None, ["Overview", "Data Upload", "Trial information"],
     icons=["bi bi-basket", 'cloud-upload', 'capsule'],
     menu_icon="cast", default_index=0, orientation="horizontal")
+files = "https://gla-my.sharepoint.com/personal/ronan_daly_glasgow_ac_uk/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fronan%5Fdaly%5Fglasgow%5Fac%5Fuk%2FDocuments%2FJoe%20Files%2FpyBasket&ga=1"
 
 #Overview subpage: general information about the app and basic steps to use it
 if menu == "Overview":
@@ -42,21 +43,24 @@ if menu == "Overview":
     st.write(" ")
     st.write("**EMERY** (**E**xplainable **M**achine l**E**arning fo**R** p**Y**basket) is a user-friendly interactive platform that allows the visualisation and exploration"
              " of results obtained from the pyBasket pipeline. The main goal of EMERY is to aid in the investigation of"
-             " the omics profiles of the samples or patients involved in clinical basket trials and gain biological insights"
-             " into the response patterns showed by different subgroups of patients to a drug.")
+             " the omics profiles of the samples or patients involved in clinical trials and gain biological insights"
+             " into the resistance patterns showed to a drug by different subgroups of patients. Also, interpretable Machine Learning"
+             " methods can be used to identify features (genes) that have an important impact on the drug resistance rates."
+             " EMERY can be used to interpret the results of the pyBasket pipeline and enhance the design of basket trials by identifying subgroups "
+             "of patients within a disease type that are more likely to respond to a treatment.")
     st.write(" ")
     st.write("##### Basket trials")
     st.write("Basket trials are a type of early phase clinical trial design that tests how well a new drug or treatment works in"
              " patients that are grouped based on the same molecular mutation or biomarker within a type of disease."
-             " This innovative approach is more effective and a reduced cost, as it requires fewer patients to be enrolled "
+             " This innovative approach is more effective and have a reduced cost, as it requires fewer patients to be enrolled "
              "for a study to be carried out and allows "
              "intractable or rare cancer patients to also be included in general clinical trials."
              " As they allow for multiple diseases to be studied, it facilitates faster drug development for specific "
-             "subpopulations of patients and allows for a more personalised treatment approach.")
+             "subpopulations of patients and allows for a more personalised treatment approach. ")
     st.write(" ")
     st.write("##### pyBasket")
     url = "https://glasgowcompbio.github.io/pyBasket/"
-    st.write("pyBasket is a two-stage approach developed by other researchers that incorporates omics data into basket trial response prediction from patients."
+    st.write("pyBasket is a two-stage approach previously developed by other researchers that incorporates omics data into clinical trial response prediction from patients."
              " In the first stage, patients are clustered based on their omics profile using K-means clustering. "
              " These clusters assignments are used within a hierarchical Bayesian model along with response rates from different types of disease to "
              " estimate overall response rates and predict interaction terms between each type of disease and cluster. Further information about the pyBasket model can be found here: [link](%s)" % url)
@@ -66,37 +70,37 @@ if menu == "Overview":
         col11, col12 = st.columns((2,2))
         with col11:
             st.write("##### :one: Upload the data")
-            st.write("Navigate to the _Data Upload_ tab in this same page. Select a pickle file with results obtained from the pyBasket pipeline to be uploaded.")
+            st.write("Navigate to the _Data Upload_ subpage in this same page. Select a pickle file (.p) with results obtained from the pyBasket pipeline to be uploaded. You can get some example results"
+                     " file from the pyBasket pipeline's [OneDrive folder](%files).")
             st.write(" ")
             st.write("##### :two: Check file information")
             st.write(
-                "Navigate to the _File Information_ tab in this same page to find information about the file uploaded.")
+                "Navigate to the _Trial Information_ subpage in this same page to find information about the file uploaded.")
             st.write(" ")
             st.write("##### :three: Check drug information")
             st.write(
-                "Navigate to the _Drug Information_ tab in this same page to find further information about the drug tested in the basket trial being analysed.")
+                "In the same _Trial Information_ subpage, further information about the drug tested in the trial being analysed can also be found.")
             st.write(" ")
         with col12:
             st.write("##### :four: Explore the data")
             st.write(
-                "Navigate to the _Data Exploration_ subpage located in the left sidebar. Find more general information about the samples, the predicted treatment response rates and "
-                "perform Dimensionality reduction and Differential Expression Analysis.")
+                "Navigate to the _Data Exploration_ page located in the left sidebar. Find more general information about the samples, the predicted treatment response rates and "
+                "perform Dimensionality reduction, find the Prototypical sample of each group or do Differential Expression Analysis.")
             st.write(" ")
-            st.write("##### :five: Select and analyse a disease*cluster interaction")
+            st.write("##### :five: Select and analyse a disease-cluster interaction")
             st.write("In the left sidebar, select a cluster number and a disease type. Samples that fall in this interaction will be selected. "
-                     "Navigate to the _Disease-Cluster_Interactions_ subpage located in the left sidebar to further explore results from the samples included in the selected disease-cluster interaction.")
+                     "Navigate to the _Disease-Cluster_ _Interactions_ subpage located in the left sidebar to further explore results from the samples included in the selected disease-cluster interaction.")
             st.write(" ")
             st.write("##### :six: Use interpretable ML methods ")
             st.write(
-                "Navigate to the _Feature Importance_Analysis subpage located in the left sidebar to use interpretable Machine Learning methods and explore important features.")
+                "Navigate to the _Feature_ _Importance_ _Analysis_ subpage located in the left sidebar to use interpretable Machine Learning methods and explore important transcripts.")
             st.write(" ")
 
 #Upload data subpage
 if menu == "Data Upload":
     st.subheader("Please upload your data")
-    files = "https://gla-my.sharepoint.com/personal/ronan_daly_glasgow_ac_uk/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fronan%5Fdaly%5Fglasgow%5Fac%5Fuk%2FDocuments%2FJoe%20Files%2FpyBasket&ga=1"
     st.write("Click the box to select a pickle file with results from the pyBasket pipeline to be uploaded. Other results files can be sourced from the pyBasket project's [OneDrive folder](%files).")
-    input_file = st.file_uploader('Upload your data file (.py format)', type='p')
+    input_file = st.file_uploader('Upload your data file (pickle format .p)', type='p')
     file_name = ""
     if input_file is not None:
         with tempfile.NamedTemporaryFile(suffix=".py") as tmp_file:

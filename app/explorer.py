@@ -80,14 +80,14 @@ class Data():
             df_grouped = self.patient_df.groupby(["resistance", feature]).size().reset_index(name='Count')
             alt_ver_barplot(df_grouped, feature, 'Count', 2, x_lab, "Number of samples", "resistance", title, "NumSamples",
                             ["resistance", feature, 'Count'])
-            st.caption("The x-axis shows the levels of the grouping chosen (clusters or disease types). The y-axis shows the number of samples."
-                       " Within levels, the number of samples that are Non-resistant (green) or Resistant (red) to treatment are shown.")
+            st.caption("The x-axis shows the groups chosen (clusters or disease types). The y-axis shows the total number of samples in each group."
+                       " Within groups, the number of samples that are Non-resistant (green) or Resistant (red) to the treatment are shown.")
         else:
             df_grouped = self.patient_df.groupby([feature]).size().reset_index(name='Count')
             alt_ver_barplot(df_grouped, feature, 'Count', size, x_lab, "Number of samples", feature, title, "NumSamples",
                             [feature,'Count'])
             st.caption(
-                "The x-axis shows the levels of the grouping chosen (clusters or disease types). The y-axis shows the number of samples.")
+                "The x-axis shows the groups chosen (clusters or disease types). The y-axis shows the total number of samples in each group.")
 
     #Displays results in a table format, option to show results grouped by response (RD) within groups
     def showRawData(self, feature, x_variable, RD):
@@ -101,8 +101,10 @@ class Data():
         raw_count.columns = columns
         if RD:
             raw_count['resistance'] = raw_count['resistance']== "Non-resistant"
+            st.caption("Subgroups of samples that are not resistant to a drug are marked with a ticked box.")
         saveTable(raw_count, "NumOfS")
         st.dataframe(raw_count, use_container_width=True)
+
 
     #Shows samples' AAC response in a scatterplot or table if RawD is True
     def AAC_scatterplot(self, RawD):
@@ -114,7 +116,7 @@ class Data():
             reseted_df = self.patient_df.reset_index()
             reseted_df["index"] = range(reseted_df.shape[0])
             alt_scatterplot(reseted_df, 'index', 'responses', "Sample index", "AAC response", "AAC response", "AAC", ["samples", "responses"])
-            st.caption("The x-axis shows the sample index. The y-axis shows the real AAC response of the sample to the drug.")
+            st.caption("The x-axis shows the sample index. The y-axis shows the real AAC response of the cell line to the drug.")
 
     #Display AAC response statistics in a table format
     def raw_data_AAC(self,feature,x_variable):
@@ -139,11 +141,11 @@ class Data():
                 alt_boxplot(self.patient_df, feature, "responses", 2, x_lab, "AAC response", "resistance", "AAC response",
                             "AAC")
                 st.caption(
-                    "The x-axis shows the levels of the grouping chosen (clusters or disease types). The y-axis shows the real AAC response to the drug."
+                    "The x-axis shows the groups chosen (clusters or disease types). The y-axis shows the real AAC response to the drug."
                     " Within levels, the AAC response by the non-resistant (green) or resistant (red) samples to treatment are shown.")
             else:
                 alt_boxplot(self.patient_df, feature, "responses", size, x_lab, "AAC response", feature, "AAC response", "AAC")
-                st.caption("The x-axis shows the levels of the grouping chosen (clusters or disease types). The y-axis shows the real AAC response to the drug.")
+                st.caption("The x-axis shows the groups chosen (clusters or disease types). The y-axis shows the real AAC response to the drug.")
 
     #Displays mean inferred response probabilities for clusters o baskets in a bar plot or table (if RawD_prob is True)
     def barInferredProb(self, feature,RawD_prob,cred_inter):
@@ -185,10 +187,10 @@ class Data():
         )
         interval_data['Percentile th'] = interval_data['Percentile th']*100
         intervals =[int(x*100) for x in intervals]
-        st.write("##### Percentiles of chosen credible interval are: {}th (lower bound/min of range), {}th (median) and {}th (upper bound/max of range".format(*intervals))
+        st.write("##### Percentiles of chosen credible interval are: {}th (lower bound/min of range), {}th (median) and {}th (upper bound/max of range).".format(*intervals))
         if RawD_prob:
             saveTable(interval_data, "raw-prob")
-            st.write("##### Results from applying 90% credible interval and percentiles.")
+            st.write("##### Results from applying a 90% credible interval and percentiles.")
             st.dataframe(interval_data, use_container_width=True)
             st.write("##### Summary of inferred response probabilities")
             st.dataframe(summary, use_container_width=True)
@@ -202,4 +204,4 @@ class Data():
             savePlot(base, "probabilities")
             st.altair_chart(base, theme="streamlit", use_container_width=True)
             st.caption("The x-axis shows the different groups in the variable chosen (clusters or disease types)."
-                       " The y-axis shows the range defined by the credible interval in which the overall probability of response falls. ")
+                       " The y-axis shows the range defined by the credible interval in which the probability distribution of response falls in. ")

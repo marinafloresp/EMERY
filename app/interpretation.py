@@ -157,7 +157,7 @@ class DEA():
         ttest_results = []
         for column in df1.columns:
             t, p = ttest_ind(df1[column], df2[column], nan_policy='omit')
-            l2fc = np.mean(df1[column].values) - np.mean(df2[column].values)
+            l2fc = np.mean(df2[column].values) - np.mean(df1[column].values)
             ttest_results.append((column, t, p, l2fc))
         dea_results = pd.DataFrame(ttest_results, columns=['Feature', 'T-Statistic', 'P-Value', 'LFC'])
         dea_results = dea_results.dropna()
@@ -178,11 +178,11 @@ class DEA():
         st.subheader("Volcano plot")
         st.write(
             "The volcano plot combines results from Fold Change (FC) Analysis and T-tests to select significant features based on the selected "
-            " statistical significance thresholds (adjusted p-value and LFC threshold). It shows statistical significance (corrected P value) vs the magnitude"
-            " of change (LFC) between the two conditions. Below, results are shown for {} vs {}.".format(option1, option2))
+            " statistical significance thresholds (corrected p-value and LFC threshold). It shows statistical significance (corrected p-value) vs the magnitude"
+            " of change (LFC) between the two conditions. Below, results are shown for analysis done on comparison {} vs {}.".format(option1, option2))
         savePlot(base,"DEA")
         st.altair_chart(base, theme="streamlit", use_container_width=True)
-        st.caption("The x-axis represents the magnitude of change by the log of the FC. The y-axis represents the "
+        st.caption("The x-axis represents the magnitude of change by the log of the Fold Change. The y-axis represents the "
                    "statistical significance by corrected p-value. Red represents up-regulated transcripts in the second condition compared to the first condition. "
                    "Blue values represent transcripts down-regulated in the second condition compared to the first condition.")
 
@@ -228,12 +228,12 @@ class DEA():
             numShow = st.slider('Select number of transcripts to show', 0,len(self.ttest_res))
             df_show = self.ttest_res[:numShow]
         df_show = df_show.drop('direction', axis = 1)
-        #saveTable(df_show, feature)
+        saveTable(df_show, feature)
         st.dataframe(df_show, use_container_width=True)
         st.caption("Ordered by most significantly different (highest adj p-value).")
         return self.ttest_res
 
-    #Function to perform DEA between samples in an interaction and rest of samples
+    #Function to perform DEA between samples in an interaction vs rest of samples
     def diffAnalysis_inter(self,subgroup,pthresh,logthresh):
         indexes = subgroup.index
         filtered_df= self.expr_df_selected.drop(indexes)
@@ -347,6 +347,7 @@ class DEA():
         st.caption("The x-axis represents the magnitude of change by the log of the FC. The y-axis represents the "
                    "statistical significance by corrected p-value. Red represents up-regulated transcripts in the second condition compared to the first condition. "
                    "Blue values represent transcripts down-regulated in the second condition compared to the first condition.")
+
     def boxplot_adv(self, subgroup1, subgroup2, disease1, disease2, cluster1, cluster2, transcript):
         self.df_group1 = subgroup1
         self.df_group2 = subgroup2
