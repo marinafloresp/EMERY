@@ -23,17 +23,17 @@ dependencies:
   - mpld3
   - shap
   - altair
-  - pip:
-    - pymc
-    - arviz
-    - graphviz
-    - twine
-    - build
-    - mkdocs
-    - mkdocstrings
-    - streamlit_option_menu
-    - alibi
-    - dc_stat_think
-    - lime
-    - vl-convert-python
+pip:
+  - pymc
+  - arviz
+  - graphviz
+  - twine
+  - build
+  - mkdocs
+  - mkdocstrings
+  - streamlit_option_menu
+  - alibi
+  - dc_stat_think
+  - lime
+  - vl-convert-python
 
