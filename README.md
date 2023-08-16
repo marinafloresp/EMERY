@@ -21,8 +21,9 @@ Download the necessary pyBasket pipeline results saved in a pickle format from t
 
 #### Option 2: Manage dependencies using Anaconda Python:
    1. Install Anaconda Python (https://www.anaconda.com/products/individual).
-   2. In the cloned Github repository, run `$ conda env create --file environment.yml`.
-   3. Enter virtual environment using `$ conda activate pyBasketApp`.
+   2. Clone the repository in the desired location of your own machine: git clone 'clone link repository'
+   3. In the cloned Github repository, run `$ conda env create --file environment.yml`.
+   4. Enter virtual environment using `$ conda activate EMERY`.
  
 ***3. Run the app***
 
