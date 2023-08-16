@@ -1,4 +1,4 @@
-name: EMERY2
+name: EMERY
 channels:
   - defaults
 dependencies:
