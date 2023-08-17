@@ -200,20 +200,22 @@ class DEA():
                 "The volcano plot combines results from Fold Change (FC) Analysis and T-tests to select significant features based on the selected "
                 " statistical significance thresholds (adjusted p-value and LFC threshold). It shows statistical significance (corrected P value) vs the magnitude"
                 " of change (LFC) between the two conditions. Below, results are shown for resistant vs non-resistant samples within the selected disease*cluster"
-                " interaction.")
+                " interaction."
+                "Red represents up-regulated transcripts in the second condition (Non-resistant samples) compared to the first condition (Resistant samples). "
+                       "Blue values represent transcripts down-regulated in the second condition  (Non-resistant samples) compared to the first condition (Resistant samples)."
+            )
             savePlot(base, "DEA:resp")
             st.altair_chart(base, theme="streamlit", use_container_width=True)
             st.caption("The x-axis represents the magnitude of change by the log of the FC. The y-axis represents the "
-                       "statistical significance by corrected p-value. Red represents up-regulated transcripts in the second condition compared to the first condition. "
-                       "Blue values represent transcripts down-regulated in the second condition compared to the first condition.")
+                       "statistical significance by corrected p-value. ")
         else:
             st.warning("There are not enough samples to do DEA. Please choose another combination")
 
     #Function to show DEA results in a table
     def showResults(self,feature):
         st.subheader("Results")
-        st.write("Results from Fold Change (FC) and T-test analyses for each transcript/feature are shown below. Significant features are those features whose adjusted "
-                 "p-value is beyond the selected adjusted p-value threshold, either up or down regulated.")
+        st.write("Results from Fold Change (FC) and T-test analyses for each transcript/feature are shown below. Significant features are those features whose corrected "
+                 "p-value is beyond the selected corrected p-value threshold, either up or down regulated.")
         self.ttest_res['Corrected P-value'] = self.ttest_res['Corrected P-value'].apply('{:.6e}'.format)
         self.ttest_res['P-Value'] = self.ttest_res['P-Value'].apply('{:.6e}'.format)
         only_sig = st.checkbox('Show only significant transcripts.')
@@ -243,15 +245,15 @@ class DEA():
         st.write(
             "The volcano plot combines results from Fold Change (FC) Analysis and T-tests to select significant features based on the selected "
             " statistical significance thresholds (corrected p-value and LFC threshold). It shows statistical significance (Corrected P value) vs the magnitude"
-            " of change (LFC) between the two conditions. Below, results are shown for samples in the selected disease*cluster interaction"
-            " vs any other sample.")
+            " of change (LFC) between the two conditions. Below, results are shown for samples in the selected disease-cluster interaction"
+            " vs all other samples. Red represents up-regulated transcripts in the second condition (all samples) compared to the first condition"
+                   " (samples in disease-cluster interaction). "
+                   "Blue values represent transcripts down-regulated in the second condition (all samples) compared to the first condition (samples in disease-cluster interaction).")
         base = DEA.volcanoPlot(self,pthresh,logthresh)
         savePlot(base, "DEA")
         st.altair_chart(base, theme="streamlit", use_container_width=True)
         st.caption("The x-axis represents the magnitude of change by the log of the FC. The y-axis represents the "
-                   "statistical significance by corrected p-value. Red represents up-regulated transcripts in the second condition compared to the first condition. "
-                   "Blue values represent transcripts down-regulated in the second condition compared to the first condition.")
-
+                   "statistical significance by corrected p-value." )
     #Function to show information about a transcript chosen in a table
     def infoTranscript(self, transcript):
         info = self.ttest_res[self.ttest_res['Feature']==transcript].values.flatten().tolist()
@@ -304,7 +306,7 @@ class DEA():
         self.df_group1 = subgroup
         self.df_group2 = filtered_df
         df1 = pd.DataFrame({transcript : self.df_group1[transcript], "Group" : 'Samples in interaction'})
-        df2 = pd.DataFrame({transcript : self.df_group2[transcript], "Group" : 'All samples'})
+        df2 = pd.DataFrame({transcript: self.df_group2[transcript], "Group": 'All samples'})
         full_df = pd.concat([df1, df2])
         alt_boxplot(full_df, "Group", transcript, 2, "Group","Expression level", "Group", "Expression level of transcript {}".format(transcript), "DEA_"+transcript)
         st.caption(
@@ -341,12 +343,13 @@ class DEA():
         st.write(
             "The volcano plot combines results from Fold Change (FC) Analysis and T-tests to select significant features based on the selected "
             " statistical significance thresholds (adjusted p-value and LFC threshold). It shows statistical significance (corrected P value) vs the magnitude"
-            " of change (LFC) between the two conditions.")
+            " of change (LFC) between the two conditions."
+            "Red represents up-regulated transcripts in the second condition compared to the first condition. "
+                   "Blue values represent transcripts down-regulated in the second condition compared to the first condition.")
         savePlot(base,"DEA")
         st.altair_chart(base, theme="streamlit", use_container_width=True)
         st.caption("The x-axis represents the magnitude of change by the log of the FC. The y-axis represents the "
-                   "statistical significance by corrected p-value. Red represents up-regulated transcripts in the second condition compared to the first condition. "
-                   "Blue values represent transcripts down-regulated in the second condition compared to the first condition.")
+                   "statistical significance by corrected p-value. ")
 
     def boxplot_adv(self, subgroup1, subgroup2, disease1, disease2, cluster1, cluster2, transcript):
         self.df_group1 = subgroup1
@@ -356,6 +359,5 @@ class DEA():
         full_df = pd.concat([df1, df2])
         alt_boxplot(full_df, "Group", transcript, 2, "Group", "Expression level", "Group",
                     "Expression level of transcript {}".format(transcript), "DEA_" + transcript)
-        st.caption(
-            "The x-axis represents the two interactions being compared. The y-axis is the expression level of the chosen transcript.")
+        st.caption("The x-axis represents the two interactions being compared. The y-axis is the expression level of the chosen transcript.")
 

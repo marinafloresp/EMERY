@@ -36,7 +36,7 @@ class Analysis(Data):
     def samplesCount(self,subgroup):
         fulldf = pd.merge(self.patient_df, subgroup, left_index=True, right_index=True)
         df_grouped = fulldf.groupby(['resistance']).size().reset_index(name='Count')
-        alt_ver_barplot(df_grouped, "resistance", 'Count', 2, "Response", "Number of samples", "resistance", "Samples resistant vs non-resistant",
+        alt_ver_barplot(df_grouped, "resistance", 'Count', 2, "Response", "Number of samples", "resistance", "Samples non-resistant vs resistant",
                         "NS_Inter", ["resistance", 'Count'])
         st.caption("Number of resistant and non-resistant samples in the interaction.")
 

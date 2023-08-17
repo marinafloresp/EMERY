@@ -24,9 +24,10 @@ if "data" in st.session_state:
     if menu == "Overview":
         st.write(" ")
         st.subheader("Overview of Important Transcripts")
-        st.write('The transcripts that are driving the prediction of the AAC response of samples overall can be explored using Feature Importance Analysis. '
-                 'Feature Importance is a technique used to describe how relevant a feature is and its effect on the model '
-                 'being used to predict an outcome and can be calculated using several Model-Agnostic (MA) methods.')
+        st.write('The transcripts that are driving the prediction of the AAC response of samples can be explored using Feature Importance Analysis. '
+                 'Feature Importance Analysis is a technique used to describe how relevant a feature is and its effect on the model '
+                 'being used to predict an outcome and can be calculated using several Model-Agnostic (MA) methods. Here, the most important '
+                 'and influential transcripts in the prediction of samples resistance to the drug are shown.')
         col11, col12 = st.columns((3,2))
         with col11:
             #Option to select the method to use
@@ -36,17 +37,17 @@ if "data" in st.session_state:
             num_feat = st.number_input('Select top number of features to display (<30 is encouraged)', value=10)
         if overview_model == "RF feature importance":
             st.write("#### Random Forest")
-            st.write("Ramdom Forest is a common ML model that combines the output of multiple decision trees to reach a single result. It has been used "
-                     "as part of the pydisease pipeline to select the 500 most important features. Features importance has been ranked based on the decrease in the impurity measure. "
-                     "Below is shown the top {} features that are most important, i.e. their inclusion in a Random Forest will lead to a significant decrease in impurity. "
-                     "Features are ranked based on their importance, higher values indicate greater importance. ".format(num_feat))
+            st.write("Ramdom Forest is a common Machine Learning model that combines the output of multiple decision trees to reach a single result. It has been used "
+                     "as part of the pyBasket pipeline to select the top 500 most important transcripts in the prediction of the AAC drug response or resistance. "
+                     "Below is shown the top {} most important transcripts, i.e. their inclusion in a Random Forest will lead to a significant decrease in impurity. "
+                     "Transcripts are ranked based on their importance, higher values indicate greater importance. ".format(num_feat))
             #Option to show plot or raw data in a table
             RawD = st.checkbox("Show raw data", key="rd-RF")
             feat_inter.plotImportance(RawD,num_feat)
-            st.caption("The x-axis represents the feature's importance (decrease in impurity measure).  The y-axis represents the features with the highest importance. ")
+            st.caption("The x-axis represents the transcript's importance score (decrease in impurity measure).  The y-axis represents the transcripts with the highest importance. ")
         elif overview_model == "SHAP":
             st.write("#### SHAP values")
-            st.write("SHAP (SHapley Additive exPlanations) is a technique that explains the prediction of an observation by "
+            st.write("SHAP (SHapley Additive exPlanations) is a MA technique that explains the prediction of an observation by "
                          "computing the contribution of each feature to the prediction. It is based on Shapley values from game theory: it uses fair "
                      "allocation results from cooperative game to quantify the contribution that each feature makes to the model's prediction."
                          "Below, the top {} features that most influence the prediction of the AAC response to the drug are shown".format(num_feat))
@@ -54,19 +55,19 @@ if "data" in st.session_state:
             RawD = st.checkbox("Show raw data", key="rd-SHAP")
             explainer, values = shapFI.SHAP()
             fig = shapFI.SHAP_summary(values, num_feat, RawD)
-            st.caption("The x-axis represents the magnitude of the feature's impact on the model's output."
-                       " The y-axis shows the features with the highest impact ordered in decreasing order."
-                       "Each point is a Shapley value of an instance per feature/transcript and the colour represents the feature's value.")
+            st.caption("The x-axis represents the magnitude of the transcripts's impact on the prediction of the AAC response or resistance."
+                       " The y-axis shows the transcripts with the highest impact ordered in decreasing order."
+                       "Each point is a Shapley value of an instance per transcript and the colour represents the transcript's expression value.")
         elif overview_model == "Permutation Based":
             st.write("#### Permutation based feature importance")
             st.write('Permutation based feature importance is a MA method that measures'
                      ' the importance of a feature by calculating the increase in the model’s prediction '
                      'error when re-shuffling each predictor or feature. '
-                     'Below is shown how much impact the top {} features have in the model’s prediction for the AAC response.'.format(num_feat))
+                     'Below is shown how much impact the top {} transcripts have in the prediction for the AAC response.'.format(num_feat))
             #Option to show plot or raw data in a table
             RawD = st.checkbox("Show raw data", key="rd-PBI")
             feat_inter.permutationImportance(num_feat,RawD)
-            st.caption("The x-axis represents the feature's importance for the model's prediction. The y-axis represents the features ordered in decreasing order"
+            st.caption("The x-axis represents the transcripts's importance for the prediction of the AAC response. The y-axis represents the transcripts ordered in decreasing order"
                        " of importance.")
     elif menu == "Important Transcripts (Global)":
         st.write(" ")
@@ -79,9 +80,9 @@ if "data" in st.session_state:
         if global_method == 'ALE':
             st.write("#### Accumulated Local Effects")
             st.write(" ")
-            st.write("Accumulated Local Effects (ALE) describe how a transcript (feature) influences the prediction of AAC drug response. This method has been implemented so that the impact of a transcript's values"
+            st.write("Accumulated Local Effects (ALE) describe how a transcript influences the prediction of AAC drug response. This method has been implemented so that the impact of a transcript's values"
                      " can be explored for all samples or "
-                     "for a group of samples with specified conditions, such as only samples included in a selected disease*cluster interaction, a specific cluster or disease type."
+                     "for a group of samples with specified conditions, such as only samples included in a selected disease-cluster interaction, a specific cluster or disease type."
                      "In addition, the impact of a transcript in two different groups of samples, e.g. two different clusters, can also be compared. ")
             st.write(
                 "The resulting ALE plot shows how the prediction of the AAC drug response change as the transcript's expression values (represented by dots) move across different intervals (represented by lines in the x-axis).")
@@ -101,7 +102,6 @@ if "data" in st.session_state:
                 else:
                     global_ALE.global_ALE(feature)
             elif global_samples == 'Use samples in the selected interaction':
-                # Option to split the ALE results on Resistant vs Non-resistant samples.
                 try:
                     global_ALE.global_ALE_single(feature, cluster,disease, "interaction")
                 except:
@@ -127,23 +127,26 @@ if "data" in st.session_state:
                         "Please select at least a group.")
         elif global_method == 'PDP (SHAP)':
             st.write("#### Partial Dependence Plot (PDP) by SHAP")
-            st.write("The partial dependence plot (PDP) calculated by SHAP shows "
-                     "the marginal effect that one or two features, that might interact with each other,"
-                     " have on the predictions made by the ML model (the predicted AAC response to the drug).  ")
+            st.write("SHAP (SHapley Additive exPlanations) is a technique that explains the prediction of an observation by "
+                         "computing the contribution of each feature to the prediction. It is based on Shapley values from game theory,"
+                         " as it uses fair allocation results from cooperative game to allocate credit for a model's output among its input features."
+                         " The partial dependence plot (PDP) calculated by SHAP shows "
+                     "the marginal effect that one or two transcripts, that might interact with each other,"
+                     " have on the predictions made by the ML model (the predicted AAC response to the drug).")
             features = shapFI.SHAP_results(values,len(values[0]))
             #Option to select transcript
             transcript_PDP = st.selectbox("Select feature/transcript", features['Transcript'], key="transcript_PDP")
             st.caption("values ordered by decreasing importance by SHAP")
             st.write("#### SHAP dependence plot")
             shapFI.SHAP_dependence(values, transcript_PDP)
-            st.caption("The x-axis is the actual feature value. "
-                       "The y-axis represents the SHAP value for the feature: how much knowing that feature value changes the "
-                       "output of the model for that prediction."
-                       "The color is a second feature that interacts with the chosen feature.")
+            st.caption("The x-axis is the transcript's range of values across samples. "
+                       "The y-axis (left) represents the SHAP value for the transcript: how much knowing that transcript's value changes the "
+                       "predicted AAC drug resistance."
+                       "The color (right y-axis) is a second transcript that interacts with the chosen feature.")
     elif menu == "Important Transcripts (Local)":
         st.subheader("Important Transcripts (Local)")
         st.write(" ")
-        st.write("The transcripts that have the highest impact on the prediction of the AAC response for a specific cell lines can be explored."
+        st.write("The transcripts that have the highest impact on the prediction of the AAC response or resistance for a specific cell lines can be explored."
                  " Local Model-Agnostic (MA) interpretation methods aim to explain individual predictions made by a Machine Learning model.  ")
         st.write("#### Filter samples")
         col31, col32, col33 = st.columns((2,2,2))
@@ -178,6 +181,7 @@ if "data" in st.session_state:
             transc = feat_inter.filterSamples(transcripts, responses)
             sample = st.selectbox("Select a sample", transc, key="sample")
             # Option to select the local MA method to use
+            st.write("#### Select a local method to use.")
             local_model = st.selectbox("Select a local interpretable method", ["LIME", "SHAP"], key="local_model")
             if local_model == "LIME":
                 st.write("#### LIME for individual predictions")
@@ -185,14 +189,14 @@ if "data" in st.session_state:
                 st.write("Local interpretable model-agnostic explanations (LIME) is a technique to explain individual predictions "
                          "made by a ML model. For this, an explanation is obtained by approximating the main model with a more interpretable one."
                          " The interpretable model is trained on small perturbations of the original observation to provide a good local approximation."
-                         "For a selected sample, LIME results will show the features that have the strongest (positive or negative) impact on the "
-                         "sample prediction."
-                         )
+                         "For a selected sample, LIME results will show the transcripts that have the strongest (positive or negative) impact on the "
+                         " predicted AAC resistance to the drug for the individual cell line {}. Green values mean they will increase the predicted AAC resistance (lower response). Red values"
+                         " mean they will decrease the predicted AAC resistance (higher response).".format(sample))
                 # Option to show plot or raw data in a table
                 RawD = st.checkbox("Show raw data", key="rd-LIME")
                 limedf = feat_inter.limeInterpretation(sample,n_features,RawD)
-                st.caption("The x-axis represents the feature's importance on the model's prediction. The y-axis represents the features with highest importance in decreasing order."
-                    "Green values: positive effect on prediction. Red values: negative effect on prediction. ")
+                st.caption("The x-axis represents the transcript's importance on the prediction of the AAC response. The y-axis represents the transcripts with highest importance in decreasing order."
+                    "Green values: positive effect on prediction (higher AAC response and higher resistance). Red values: negative effect on prediction (lower AAC response and lower resistance). ")
                 st.write(" ")
                 st.write("##### Further information about the features displayed: ")
                 feature = searchTranscripts(limedf['Feature'].tolist())
@@ -212,7 +216,7 @@ if "data" in st.session_state:
                 st.write(" ")
                 st.write("##### Decision plot for {}".format(sample))
                 st.write(
-                    "The SHAP decision plot shows the relationship between the {} most influential features/transcripts and the model's prediction for the "
+                    "The SHAP decision plot shows the relationship between the {} most influential transcripts and the AAC drug response prediction for the "
                     "individual cell line {}. "
                     "They are a linear representation of SHAP values.".format(n_features, sample))
                 st.write("")
