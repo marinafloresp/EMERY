@@ -13,18 +13,12 @@ Download the necessary pyBasket pipeline results saved in a pickle format from t
 
 ***2. Set up the virtual environment***
 
-#### Option 1: Install dependencies using Pipenv and activate virtual environment
+#### Install dependencies using Pipenv and activate virtual environment
    1. Install pipenv: https://pipenv.readthedocs.io)
    2. Clone the repository in the desired location of your own machine: git clone 'clone link repository'
    3. In the cloned directory, run `$ pipenv install`. (If this doesn't work, use first: `$ sudo -H pip install -U pipenv`
    4. Enter virtual environment using `$ pipenv shell`.
-
-#### Option 2: Manage dependencies using Anaconda Python:
-   1. Install Anaconda Python (https://www.anaconda.com/products/individual).
-   2. Clone the repository in the desired location of your own machine: git clone 'clone link repository'
-   3. In the cloned Github repository, run `$ conda env create --file environment.yml`.
-   4. Enter virtual environment using `$ conda activate EMERY`.
- 
+      
 ***3. Run the app***
 
  1. Move to the "app" directory and from the command line run: `$ sh runApp.sh`
