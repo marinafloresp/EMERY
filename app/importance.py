@@ -76,7 +76,7 @@ class FI():
             saveTable(raw_data, sample + "LIME")
             st.dataframe(raw_data)
         else:
-            savePlot(fig,sample+"LIME")
+            savePlot_plt(fig,sample+"LIME")
             st.pyplot(fig)
         return raw_data
 
@@ -187,7 +187,7 @@ class Shap_FI(FI):
             saveTable(raw_data, sample + "SHAP_dec")
             st.dataframe(raw_data)
         else:
-            savePlot(fig, sample + "_SHAP_dec")
+            savePlot_plt(fig, sample + "_SHAP_dec")
             st.pyplot(fig)
         return transcripts
 
@@ -255,14 +255,14 @@ class Global_ALE(FI):
         st.pyplot(fig)
         st.caption(
             "The x-axis represents the values of the feature (dots). The 'grass' or lines in the x-axis represents the intervals in which the effect"
-            "of the transcript for the prediction has been calculated. The y-axis represents the accumulated effects or changes in the"
+            " of the transcript for the prediction has been calculated. The y-axis represents the accumulated effects or changes in the"
             " model's predictions.")
 
     #Function to compute ALE for a feature on all samples. Input: feature chosen
     def global_ALE(self,feature):
         np.set_printoptions(precision=10)
         rf = super(Global_ALE, self).trainRF(self.drug_response)
-        lr_ale = ALE(rf.predict, feature_names=self.transcripts, target_names=['drug response'])
+        lr_ale = ALE(rf.predict, feature_names=self.transcripts, target_names=['AAC response'])
         df = self.expr_df_selected.to_numpy()
         lr_exp = lr_ale.explain(df)
         index = self.transcripts.index(feature)
@@ -277,7 +277,7 @@ class Global_ALE(FI):
         st.pyplot(fig)
         st.caption(
             "The x-axis represents the values of the feature (dots). The 'grass' or lines in the x-axis represents the intervals in which the effect"
-            "of the transcript for the prediction has been calculated. The y-axis represents the accumulated effects or changes in the"
+            " of the transcript for the prediction has been calculated. The y-axis represents the accumulated effects or changes in the"
             " model's predictions.")
 
     #Function to compute ALE on a chosen feature for a selected group of samples. Input: chosen feature, cluster (if chosen), disease (if chosen), flag to use both for samples in interaction
@@ -294,7 +294,7 @@ class Global_ALE(FI):
             group = (g1,g2)
 
         samples_g1 = group1.values
-        lr_ale = ALE(rf.predict, feature_names=self.transcripts, target_names=['drug response'])
+        lr_ale = ALE(rf.predict, feature_names=self.transcripts, target_names=['AAC response'])
         df1 = self.expr_df_selected.loc[samples_g1].to_numpy()
         lr_exp1 = lr_ale.explain(df1)
         index = self.transcripts.index(feature)
@@ -309,7 +309,7 @@ class Global_ALE(FI):
         savePlot_plt(fig, "ALE-single")
         st.pyplot(fig)
         st.caption("The x-axis represents the values of the feature (dots). The 'grass' or lines in the x-axis represents the intervals in which the effect"
-                   "of the transcript for the prediction has been calculated. The y-axis represents the accumulated effects or changes in the"
+                   " of the transcript for the prediction has been calculated. The y-axis represents the accumulated effects or changes in the"
                    " model's predictions.")
 
     #Function to split samples by resistant vs non-resistant
@@ -324,7 +324,7 @@ class Global_ALE(FI):
         rf = super(Global_ALE, self).trainRF(self.drug_response)
         samples_g1 = Global_ALE.splitResponse(self,'Resistant').values
         samples_g2 = Global_ALE.splitResponse(self,'Non-resistant').values
-        lr_ale = ALE(rf.predict, feature_names=self.transcripts, target_names=['drug response'])
+        lr_ale = ALE(rf.predict, feature_names=self.transcripts, target_names=['AAC response'])
         df1 = self.expr_df_selected.loc[samples_g1].to_numpy()
         df2 = self.expr_df_selected.loc[samples_g2].to_numpy()
         lr_exp1 = lr_ale.explain(df1)
@@ -354,6 +354,6 @@ class Global_ALE(FI):
         st.pyplot(fig)
         st.caption(
             "The x-axis represents the values of the feature (dots). The 'grass' or lines in the x-axis represents the intervals in which the effect"
-            "of the transcript for the prediction has been calculated. The y-axis represents the accumulated effects or changes in the"
+            " of the transcript for the prediction has been calculated. The y-axis represents the accumulated effects or changes in the"
             " model's predictions.")
 

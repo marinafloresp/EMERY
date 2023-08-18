@@ -183,10 +183,10 @@ if "data" in st.session_state:
                 st.write("The difference in the expression level of a selected transcript between groups being compared can be explored below. "
                          "Further information about the transcript can be found by using the GeneCards button. ")
                 st.write("")
-                #Option to select transcript results to be displayed
-                transcript = searchTranscripts(results["Feature"])
                 col53, col54 = st.columns((2,4))
                 with col53:
+                    # Option to select transcript results to be displayed
+                    transcript = searchTranscripts(results["Feature"])
                     st.write(" ")
                     dea.infoTranscript(transcript)
                 with col54:
