@@ -93,14 +93,15 @@ if "data" in st.session_state:
                                         key="option-page2")
         with col2:
             cred_inter = st.number_input('Credible interval', value=90)
-
             st.caption("90% credible interval shown by default")
         # Option to show data in a table format
         RawD_prob = st.checkbox("Show raw data", key="raw-data-prob")
-        if option_page2 == 'Disease types':
+        if option_page2 == 'Disease types' and cred_inter <101 and cred_inter>0:
             data.barInferredProb("baskets",RawD_prob,cred_inter)
-        elif option_page2 == "Clusters":
+        elif option_page2 == "Clusters" and cred_inter <101 and cred_inter>0:
             data.barInferredProb("clusters",RawD_prob,cred_inter)
+        else:
+            st.warning("Please select a credible interval between 0 and 100.")
     # Subpage for analysis: PCA, prototypes and DEA
     elif menu == "Statistics":
         tab21, tab22, tab23 = st.tabs(["Dimensionality reduction", "Prototypes", "Differential expression"])

@@ -97,7 +97,7 @@ def sideBar():
     if "data" in st.session_state:
         data = st.session_state["data"]
         analysis_data = st.session_state["Analysis"]
-        st.sidebar.title("Select disease*cluster interaction")
+        st.sidebar.title("Select disease-cluster interaction")
         with st.sidebar:
             cluster = st.selectbox("Select a cluster", data.clusters_names, key="cluster")
             if "cluster" not in st.session_state:
@@ -209,21 +209,20 @@ def ecdf_interaction(data,disease,cluster,RawD, cred_inter):
     disease_index = data.disease_types.index(disease)
     cluster_index = data.clusters_names.index(cluster)
     inferred_prob = data.stacked_posterior.joint_p[disease_index][cluster_index]
-    sorted_data = np.sort(inferred_prob.values)
+    pct, pct_val = ecdf(inferred_prob, intervals)
+    sorted_data = pct['Probability'].values
     df_mean = np.mean(sorted_data)
     df_std = np.std(sorted_data)
-    #pct, pct_val = ecdf(inferred_prob, intervals)
     pdf = stats.norm.pdf(sorted_data, df_mean, df_std)
-    #cdf_values = stats.norm.cdf(sorted_data, loc=0, scale=1)
     lower_bound = np.percentile(inferred_prob.values, intervals[0])
     median = np.percentile(inferred_prob.values, intervals[1])
     upper_bound = np.percentile(inferred_prob.values, intervals[2])
     st.write(
-        "##### Percentiles of chosen credible interval are: {}th (lower bound/min of range), {}th (median) and {}th (upper bound/max of range".format(
+        "##### Percentiles of chosen credible interval are: {}th (lower bound/min of range), {}th (median) and {}th (upper bound/max of range).".format(
             *intervals))
     fig = plt.figure(figsize=(10,6))
     plt.plot(sorted_data, pdf,color='red', label='Estimated PDF')
-    plt.hist(inferred_prob.values, density=True, bins=30, alpha=0.5, label='Probability density')
+    plt.hist(inferred_prob.values, density=True, bins=30, alpha=0.5, label='Probability density (ECDF estimate)')
     plt.fill_between(sorted_data, 0, pdf, where=(sorted_data >= lower_bound) & (sorted_data <= upper_bound), color='gray',
                      alpha=0.5, label='Credible Interval: {}%'.format(cred_inter))
     # Highlight the interval bounds
@@ -234,18 +233,6 @@ def ecdf_interaction(data,disease,cluster,RawD, cred_inter):
     plt.title(label = "PDF for "+ disease + "*" + str(cluster)+ " interaction")
     savePlot_plt(fig,"PDF")
     st.pyplot(fig)
-
-
-    #st.write("""##### {}th, 50th and {}th Percentile values are""".format(intervals[0], intervals[
-    #    2]) + ": {0:.2f}, {1:.2f} and {2:.2f}".format(*pct_val['x']))
-    #if RawD:
-    #    saveTable(pct, "raw-ecdf")
-    #    st.dataframe(pct, use_container_width=True)
-   # else:
-     ##   alt_line_chart(inferred_prob.values,pct_val,'Probability', 'Percent', 'Probability', 'Percent', "Cumulative distribution for "+title,"ecdf")
-     #   st.caption("The x-axis represents the probabilities points. The y-axis represents the proportion or fraction of data points that are less than or equal to a given value.")
-#except:
-    #    st.warning("Please select a smaller interval.")
 
 #Function to find the set of samples based on a specified subgroup
 def findSubgroup(option,feature):

@@ -105,13 +105,16 @@ if "data" in st.session_state:
                 with col22:
                     analysis_data.responseSamples(subgroup)
                     st.caption("Samples ordered from lestas to most resistance (lower to higher AAC response). Responsive (non-resistant) samples are marked with a ticked box.")
-                st.subheader("Probability density function")
+                st.subheader("Inferred response probabilities")
                 st.write(
                     "In the second stage of the pyBasket pipeline, a hierarchical Bayesian model is used to estimate the overall probability "
-                    "of a disease-cluster interaction to be responsive to the treatment based on the observed AAC drug response metrics. "
-                    "The Probability Density Function (PDF) has been implemented to quantify the likelihood"
-                    " of observing a probability of response, caculate expected values, variances and determine the percentage of values that fall below a"
-                    " specified credible interval.")
+                    "of a disease-cluster interaction to be responsive to the treatment based on the observed AAC drug response metrics. In order to "
+                    "account for the number of samples in an interaction, the Empirical Cumulative Distribution Function (ECDF) has "
+                    "been applied to the probabilities output by the pyBasket pipeline. The ECDF represents the cumulative probability "
+                    "distribution of a dataset based on observed data points and is used to estimate or approximate the underlying Probability "
+                    "Density Function (PDF)."
+                    " The PDF is applied to these values in order to visualise the relative likelihood of different values occurring within the distribution"
+                    " of response probabilities and inform about the distribution's shape, central tendencies, and dispersion.")
                 st.write(" The credible interval can be chosen below, which is the range containing a particular percentage of probable values (shadowed in gray), e.g. for the 90% "
                     "credible interval, the range containing the 90% of the values is shown. The bottom of the range or lower bound (red vertical line), the median (black vertical "
                     "line) and the top of the range or upper bound (blue vertical line) are shown.")
@@ -120,7 +123,10 @@ if "data" in st.session_state:
                 st.caption("90% credible interval shown by default")
                 # Option to show data in a table
                 RawD_ecdf = st.checkbox("Show raw data", key="raw-data-ecdf")
-                ecdf_interaction(data,disease, cluster, RawD_ecdf, cred_inter)
+                if cred_inter <101 and cred_inter>0:
+                    ecdf_interaction(data,disease, cluster, RawD_ecdf, cred_inter)
+                else:
+                    st.warning("Please select a credible interval between 0 and 100.")
                 st.caption("The x-axis shows the distribution of the joint probability values. The y-axis shows the density of such distribution."
                            " The red-line curve is the PDF that describes the distribution of probabilities across the possible values of the variable."
                            " The black vertical line is the median. The red vertical line is the lower bound of the credible interval. The blue vertical"

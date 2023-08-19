@@ -3,7 +3,7 @@ import numpy as np
 import streamlit as st
 import pandas as pd
 import altair as alt
-from common import saveTable,alt_ver_barplot,alt_scatterplot,alt_boxplot, ecdf,alt_line_chart, colours, savePlot
+from common import saveTable,alt_ver_barplot,alt_scatterplot,alt_boxplot, ecdf,colours, savePlot
 
 genes_path = os.path.join('..', 'Entrez_to_Ensg99.mapping_table.tsv')
 
@@ -150,9 +150,13 @@ class Data():
     #Displays mean inferred response probabilities for clusters o baskets in a bar plot or table (if RawD_prob is True)
     def barInferredProb(self, feature,RawD_prob,cred_inter):
         stacked = self.stacked_posterior
+        intervals = [(50 - (cred_inter / 2)) / 100, 0.5, (50 + (cred_inter / 2)) / 100]
         if feature == 'baskets':
             len_colours = len(self.disease_types)
             inferred_basket = stacked.basket_p.values
+            for i in range(len(inferred_basket )):
+                probs, pct = ecdf(inferred_basket[i], intervals)
+                inferred_basket[i] = probs['Probability']
             baskets = []
             for item in self.disease_types:
                 for _ in range(len(inferred_basket[0])):
@@ -163,6 +167,9 @@ class Data():
         elif feature == "clusters":
             len_colours = len(self.clusters_names)
             inferred_cluster = stacked.cluster_p.values
+            for i in range(len(inferred_cluster)):
+                probs, pct = ecdf(inferred_cluster[i], intervals)
+                inferred_cluster[i] = probs['Probability']
             clusters = []
             for item in self.clusters_names:
                 for _ in range(len(inferred_cluster[0])):
@@ -171,7 +178,6 @@ class Data():
             df = pd.DataFrame({'mean probability': inferred_cluster, 'cluster': clusters})
             feature = 'cluster'
         palette = colours(len_colours, feature)
-        intervals = [(50 - (cred_inter/2)) / 100, 0.5, (50+(cred_inter/2)) / 100]
         summary = df.groupby(feature).mean()
         summary['SD'] = df.groupby(feature).std().fillna(0)
         summary['Median'] = df.groupby(feature).median()
