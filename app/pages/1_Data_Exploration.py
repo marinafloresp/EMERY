@@ -22,7 +22,7 @@ if "data" in st.session_state:
     if menu == "Samples information":
         st.subheader("Number of samples")
         st.write(
-            "The number of samples in each cluster or disease type is shown below. Using 'Group by resistance' option,"
+            "The number of samples in each cluster or disease type is shown below. Using 'Group by resistance' option, "
             "samples will be coloured based on their resistance against the drug: Resistant (red) and Non-resistant (green).")
         st.write(" ")
         col11, col12 = st.columns((1, 1))
@@ -53,8 +53,7 @@ if "data" in st.session_state:
             " a drug over a period of time. In the context of the Genomics of Drug Senstivity in Cancer (GDSC) project, "
             "the AAC drug response is the measure of the cell"
             " or cell line overall survival in response to the drug: the larger the AAC metric, the more resistance to the"
-            " drug is shown. A larger AAC response implies a larger resistance to the drug."
-            " "
+            " drug is shown. "
             "The AAC response or resistance values per cluster o disease type are shown below, as well as within groups for Resistant (red) and Non-"
             "resistant (green) samples.")
         st.write(" ")
@@ -82,7 +81,8 @@ if "data" in st.session_state:
     elif menu == "pyBasket results":
         st.subheader("Inferred response probability distribution")
         st.write("In the second stage of the pyBasket pipeline, a hierarchical Bayesian model is used to estimate the"
-                 " overall response probability distribution of each cluster or disease type."
+                 " overall response probability distribution of each cluster or disease type. The distribution of probabilities have had the Empirical"
+                 " Cumulative Distribution Function (ECDF) applied in order to account for the number of data instances."
                  " By choosing below a credible interval, the range containing a particular percentage of probable values is shown in the plot. "
                  "This range is delimited by the percentiles below (lower bound) and above (upper bound) the credible interval and the median (50th). Percentiles represent the value below "
                  "which a given percentage of probabilities fall, e.g. a 5th percentile is the value below which 5% of the data points fall.")
@@ -110,8 +110,8 @@ if "data" in st.session_state:
         with tab21:
             st.subheader("Dimensionality reduction")
             st.write("The goal of dimensionality reduction is to project high-dimensionality data to a lower "
-                     "dimensional subspace while preserving the essence of the data and the maximum amount of information.")
-            st.write("Principal Component Analysis (PCA) is a dimensionality reduction method that enables the visualisation"
+                     "dimensional subspace while preserving the essence of the data and the maximum amount of information. "
+                     "Principal Component Analysis (PCA) is a dimensionality reduction method that enables the visualisation"
                      " of high-dimensional data as well as capturing as much as possible of its variation. "
                      "The results for PCA using 5 Principal Components on the data can be explored by selecting a variable to colour cell lines or samples by: "
                      "clusters, disease type or resistance.")
@@ -144,8 +144,8 @@ if "data" in st.session_state:
             st.write(" ")
             st.write("The goal of Differential Expression Analysis (DEA) is to discover whether the expression "
                      "level of a feature (gene or transcript) is quantitatively different between experimental "
-                     "groups or conditions. Below, any two clusters, types of disease or resistance groups can be compared. ")
-            st.write("The T-test for the means of each feature in two independent groups or conditions is calculated."
+                     "groups or conditions. Below, any two clusters, types of disease or resistance groups can be compared. "
+                     "The T-test for the means of each feature in two independent groups or conditions is calculated."
                      "The null hypothesis is that the feature has identical average values across conditions.")
             st.write(" ")
             col51, col52 = st.columns((2, 2))

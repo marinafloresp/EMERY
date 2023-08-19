@@ -70,7 +70,7 @@ if menu == "Overview":
         with col11:
             st.write("##### :one: Upload the data")
             st.write("Navigate to the _Data Upload_ subpage in this same page. Select a pickle file (.p) with results obtained from the pyBasket pipeline to be uploaded. You can get some example results"
-                     " file from the pyBasket pipeline's [OneDrive folder](%files).")
+                     " file from the pyBasket pipeline's [OneDrive folder](%s)." %files)
             st.write(" ")
             st.write("##### :two: Check file information")
             st.write(
@@ -78,7 +78,8 @@ if menu == "Overview":
             st.write(" ")
             st.write("##### :three: Check drug information")
             st.write(
-                "In the same _Trial Information_ subpage, further information about the drug tested in the trial being analysed can also be found.")
+                "In the same _Trial Information_ subpage, further information about the drug tested in the trial being analysed can also be found. "
+                "This includes direct links to the drug's pages in sites like DrugBank, Wikipedia or PubMed. ")
             st.write(" ")
         with col12:
             st.write("##### :four: Explore the data")
@@ -87,8 +88,9 @@ if menu == "Overview":
                 "perform Dimensionality reduction, find the Prototypical sample of each group or do Differential Expression Analysis.")
             st.write(" ")
             st.write("##### :five: Select and analyse a disease-cluster interaction")
-            st.write("In the left sidebar, select a cluster number and a disease type. Samples that fall in this interaction will be selected. "
-                     "Navigate to the _Disease-Cluster_ _Interactions_ subpage located in the left sidebar to further explore results from the samples included in the selected disease-cluster interaction.")
+            st.write("In the left sidebar, navigate to the _Disease-Cluster_ _Interactions_ page to get an overview of all possible cluster"
+                     " and disease combinations. Select a cluster number and a disease type in the sidebar. Samples that fall in this interaction will be selected. "
+                     "Navigate to the _Selected interaction_ subpage to further explore results from the samples included in the selected disease-cluster interaction.")
             st.write(" ")
             st.write("##### :six: Use interpretable ML methods ")
             st.write(
@@ -139,8 +141,8 @@ if menu == "Trial information":
         elif drug == "Docetaxel":
             accession_num = "DB01248"
         st.write("#### _DrugBank_")
-        st.write("_DrugBank_ is a freely accesible online database containing information on drugs and drugs targets. It combined chemical,"
-                 " pharmacological and pharmaceutical data with information about drug target (sequence, structure, pathway, etc."
+        st.write("_DrugBank_ is a freely accesible online database containing information on drugs and drugs targets. It combines chemical,"
+                 " pharmacological and pharmaceutical data with information about drug target (sequence, structure, pathway, etc.)"
                  " Further pharmacological and chemical information about {} can be found in the link to _DrugBank_ below.".format(drug))
         st.button('Open DrugBank', on_click=openDrugBank, args=(accession_num,))
         st.write("#### _PubMed_")
@@ -150,7 +152,7 @@ if menu == "Trial information":
         st.button('Open PubMed',on_click=openPubMed, args=(drug,))
 
         st.write("#### _Wikipedia_")
-        st.write("_Wikipedia_ is a free online accessible encyclopedia where more general non-technical information about {} can be found".format(drug))
+        st.write("_Wikipedia_ is a free online accessible encyclopedia where more general non-technical information about {} can be found.".format(drug))
         st.button('Open Wikipedia', on_click=openWikipedia, args=(drug,))
     else:
         st.warning("No data found. Please upload results in the 'Data Upload' tab")

@@ -194,10 +194,17 @@ if "data" in st.session_state:
                          " predicted AAC resistance to the drug for the individual cell line {}. Green values mean they will increase the predicted AAC resistance (lower response). Red values"
                          " mean they will decrease the predicted AAC resistance (higher response).".format(sample))
                 # Option to show plot or raw data in a table
+                plot, limedf = feat_inter.limeInterpretation(sample, n_features)
                 RawD = st.checkbox("Show raw data", key="rd-LIME")
-                limedf = feat_inter.limeInterpretation(sample,n_features,RawD)
-                st.caption("The x-axis represents the transcript's importance on the prediction of the AAC response. The y-axis represents the transcripts with highest importance in decreasing order."
-                    "Green values: positive effect on prediction (higher AAC response and higher resistance). Red values: negative effect on prediction (lower AAC response and lower resistance). ")
+                if RawD:
+                    saveTable(limedf, sample +"LIME")
+                    st.dataframe(limedf)
+                else:
+                    savePlot_plt(plot, sample + "LIME")
+                    st.pyplot(plot)
+                    st.caption(
+                        "The x-axis represents the transcript's importance on the prediction of the AAC response. The y-axis represents the transcripts with highest importance in decreasing order."
+                        "Green values: positive effect on prediction (higher AAC response and higher resistance). Red values: negative effect on prediction (lower AAC response and lower resistance). ")
                 st.write(" ")
                 st.write("##### Further information about the features displayed: ")
                 feature = searchTranscripts(limedf['Feature'].tolist())

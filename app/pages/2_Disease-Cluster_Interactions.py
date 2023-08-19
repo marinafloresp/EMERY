@@ -223,9 +223,9 @@ if "data" in st.session_state:
                             st.write(
                                 "The difference in the expression level of a transcript/feature and the individual results from "
                                 "DEA can be explored below. Further information about the transcript can be found in the button that links to its GeneCard profile.")
-                            feature = searchTranscripts(results["Feature"])
                             col53, col54 = st.columns((2, 4))
                             with col53:
+                                feature = searchTranscripts(results["Feature"])
                                 st.write(" ")
                                 dea.infoTranscript(feature)
                             with col54:
@@ -269,9 +269,9 @@ if "data" in st.session_state:
                             st.write(
                                 "The difference in the expression level of a transcript/feature and the individual results from "
                                 "DEA can be explored below. Further information about the transcript can be found in the button that links to its GeneCard profile.")
-                            feature = searchTranscripts(results["Feature"])
                             col53, col54 = st.columns((2, 4))
                             with col53:
+                                feature = searchTranscripts(results["Feature"])
                                 st.write(" ")
                                 dea.infoTranscript(feature)
                             with col54:

@@ -195,10 +195,12 @@ class Data():
         intervals =[int(x*100) for x in intervals]
         st.write("##### Percentiles of chosen credible interval are: {}th (lower bound/min of range), {}th (median) and {}th (upper bound/max of range).".format(*intervals))
         if RawD_prob:
-            saveTable(interval_data, "raw-prob")
+
             st.write("##### Results from applying a 90% credible interval and percentiles.")
+            saveTable(interval_data, "raw-prob")
             st.dataframe(interval_data, use_container_width=True)
             st.write("##### Summary of inferred response probabilities")
+            saveTable(summary, "raw-prob")
             st.dataframe(summary, use_container_width=True)
         else:
             base = alt.Chart(interval_data, title="Inferred response probabilities").mark_boxplot(ticks=True, size=50).encode(

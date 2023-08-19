@@ -220,19 +220,24 @@ def ecdf_interaction(data,disease,cluster,RawD, cred_inter):
     st.write(
         "##### Percentiles of chosen credible interval are: {}th (lower bound/min of range), {}th (median) and {}th (upper bound/max of range).".format(
             *intervals))
-    fig = plt.figure(figsize=(10,6))
-    plt.plot(sorted_data, pdf,color='red', label='Estimated PDF')
-    plt.hist(inferred_prob.values, density=True, bins=30, alpha=0.5, label='Probability density (ECDF estimate)')
-    plt.fill_between(sorted_data, 0, pdf, where=(sorted_data >= lower_bound) & (sorted_data <= upper_bound), color='gray',
-                     alpha=0.5, label='Credible Interval: {}%'.format(cred_inter))
-    # Highlight the interval bounds
-    plt.axvline(lower_bound, color='red', linestyle='--', label='Lower Bound: {}th percentile'.format(intervals[0]))
-    plt.axvline(upper_bound, color='blue', linestyle='--', label='Upper Bound: {}th percentile'.format(intervals[2]))
-    plt.axvline(median, color='black', linestyle='--', label='Median')
-    plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.30), borderaxespad=0,ncol=2,)
-    plt.title(label = "PDF for "+ disease + "*" + str(cluster)+ " interaction")
-    savePlot_plt(fig,"PDF")
-    st.pyplot(fig)
+    if RawD:
+        saveTable(pct, "raw-prob")
+        st.write("##### Results from applying a 90% credible interval and percentiles.")
+        st.dataframe(pct, use_container_width=True)
+    else:
+        fig = plt.figure(figsize=(10,6))
+        plt.plot(sorted_data, pdf,color='red', label='Estimated PDF')
+        plt.hist(inferred_prob.values, density=True, bins=30, alpha=0.5, label='Probability density (ECDF estimate)')
+        plt.fill_between(sorted_data, 0, pdf, where=(sorted_data >= lower_bound) & (sorted_data <= upper_bound), color='gray',
+                         alpha=0.5, label='Credible Interval: {}%'.format(cred_inter))
+        # Highlight the interval bounds
+        plt.axvline(lower_bound, color='red', linestyle='--', label='Lower Bound: {}th percentile'.format(intervals[0]))
+        plt.axvline(upper_bound, color='blue', linestyle='--', label='Upper Bound: {}th percentile'.format(intervals[2]))
+        plt.axvline(median, color='black', linestyle='--', label='Median')
+        plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.30), borderaxespad=0,ncol=2,)
+        plt.title(label = "PDF for "+ disease + "*" + str(cluster)+ " interaction")
+        savePlot_plt(fig,"PDF")
+        st.pyplot(fig)
 
 #Function to find the set of samples based on a specified subgroup
 def findSubgroup(option,feature):

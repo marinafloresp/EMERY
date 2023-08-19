@@ -60,7 +60,7 @@ class FI():
         return rf
 
     #Function to apply LIME method on a chosen sample
-    def limeInterpretation(self,sample,n_features,RawD):
+    def limeInterpretation(self,sample,n_features):
         df = self.expr_df_selected.reset_index()
         index = df[df["index"] == sample].index
         df = df.drop("index",axis = 1)
@@ -70,15 +70,9 @@ class FI():
         exp = explainer.explain_instance(df.iloc[index[0]], rf.predict, num_features=n_features,)
         fig = exp.as_pyplot_figure()
         raw_data = pd.DataFrame(exp.as_list(), columns=['Feature', 'Contribution'])
-        st.write("##### The predicted value for sample {} is {}".format(sample, round(exp.local_pred[0],3)))
+        st.write("##### The predicted AAC value for sample {} is {}".format(sample, round(exp.local_pred[0],3)))
         st.write(" ")
-        if RawD:
-            saveTable(raw_data, sample + "LIME")
-            st.dataframe(raw_data)
-        else:
-            savePlot_plt(fig,sample+"LIME")
-            st.pyplot(fig)
-        return raw_data
+        return fig,raw_data
 
     #Function to implement Permutation Importance MA method.
     def permutationImportance(self, num_feats, RawD):
