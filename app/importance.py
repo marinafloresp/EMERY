@@ -80,7 +80,7 @@ class FI():
             st.pyplot(fig)
         return raw_data
 
-    #Function to implement Permutation Importance MA method. Input: number of features, option to show Raw data
+    #Function to implement Permutation Importance MA method.
     def permutationImportance(self, num_feats, RawD):
         rf = FI.trainRF(self, self.drug_response)
         perm_importance = permutation_importance(rf, self.X_test.values, self.y_test.values,n_repeats=10, random_state=42)
@@ -94,7 +94,7 @@ class FI():
         else:
             alt_hor_barplot(raw_D, 'Importance', 'Features', num_feats, 'Mean Importance score', "Features", 'Features', "Feature Importance by Permutation based", "PIB")
 
-    #Function to filter samples by chosen criteria (cluster or disease type, or both). Input: cluster choice, disease choice
+    #Function to filter samples by chosen criteria (cluster or disease type, or both).
     def displaySamples(self,cluster,disease):
         transcripts = self.expr_df_selected
         self.patient_df = self.patient_df.reset_index()
@@ -111,7 +111,7 @@ class FI():
         num = len(transcript_df)
         return samples,num
 
-    #Function to filter samples by resistance. Input: list of samples, response to show
+    #Function to filter samples by resistance.
     def filterSamples(self,samples,response):
         df = self.patient_df.loc[self.patient_df["samples"].isin(samples.tolist())]
         if response == 'Only Non-resistant samples':
@@ -141,7 +141,7 @@ class Shap_FI(FI):
         self.model = rf
         return explainer, shap_values
 
-    # Function for Partial Dependence Plot by SHAP. Input: SHAP values, feature chosen
+    # Function for Partial Dependence Plot by SHAP. I
     def SHAP_dependence(self, values, feature):
         st.set_option('deprecation.showPyplotGlobalUse', False)
         fig, ax = plt.subplots()
@@ -160,7 +160,7 @@ class Shap_FI(FI):
         importance_df = importance_df.reset_index(drop = True)
         return importance_df
 
-    # Summary plot by SHAP. Input: SHAP values, number of features, option to show Raw data
+    # Summary plot by SHAP.
     def SHAP_summary(self, values, num_feats, RawD):
         if RawD:
             raw_df = Shap_FI.SHAP_results(self, values, num_feats)
@@ -173,7 +173,7 @@ class Shap_FI(FI):
             savePlot_plt(fig, "summary_SHAP")
             st.pyplot(fig)
 
-    #Function for decision plot by SHAP. Input: sample chosen, explainer and values calculated by SHAP, number of features to display, option for raw data or plot
+    #Function for decision plot by SHAP.
     def SHAP_decision(self, sample, explainer,values,n_features,RawD):
         df = self.expr_df_selected.reset_index()
         index = df[df["index"] == sample].index
@@ -213,7 +213,7 @@ class Global_ALE(FI):
         self.y_test = None
         self.transcripts = self.expr_df_selected.columns.tolist()
 
-    #Function to compute ALE for a feature on samples from two subgroups. Input: feature chosen, subgroup 1, subgroup 2, flag
+    #Function to compute ALE for a feature on samples from two subgroups.
     def global_ALE_mult(self, feature, g1, g2, option):
         rf = super(Global_ALE, self).trainRF(self.drug_response)
         if option =="clusters":
@@ -258,7 +258,7 @@ class Global_ALE(FI):
             " of the transcript for the prediction has been calculated. The y-axis represents the accumulated effects or changes in the"
             " model's predictions.")
 
-    #Function to compute ALE for a feature on all samples. Input: feature chosen
+    #Function to compute ALE for a feature on all samples.
     def global_ALE(self,feature):
         np.set_printoptions(precision=10)
         rf = super(Global_ALE, self).trainRF(self.drug_response)
@@ -280,7 +280,7 @@ class Global_ALE(FI):
             " of the transcript for the prediction has been calculated. The y-axis represents the accumulated effects or changes in the"
             " model's predictions.")
 
-    #Function to compute ALE on a chosen feature for a selected group of samples. Input: chosen feature, cluster (if chosen), disease (if chosen), flag to use both for samples in interaction
+    #Function to compute ALE on a chosen feature for a selected group of samples.
     def global_ALE_single(self,feature,g1,g2,option):
         rf = super(Global_ALE, self).trainRF(self.drug_response)
         if option =="clusters":

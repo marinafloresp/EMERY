@@ -20,6 +20,7 @@ if "data" in st.session_state:
     #Find samples in disease-cluster interaction
     disease, cluster = st.session_state["disease"], st.session_state["cluster"]
     subgroup, size = analysis_data.findInteraction(st.session_state["cluster"], st.session_state["disease"])
+    #Subpage with overview of all interactions
     if menu == "All interactions":
         st.write("""This page shows results and information about the interactions between clusters and types of diseases. Below, the information to 
                  display in the heatmap can be selected, such as the number of samples, the number of Non-resistant samples or the inferred response in each disease-cluster interaction.""")
@@ -53,7 +54,7 @@ if "data" in st.session_state:
             st.write("#### Number of samples per disease-cluster interaction showing non-resistance to the drug")
             st.write(
                 "Explore the number of samples in each disease and cluster combination that are Non-resistant (or responsive) to the drug.")
-            # Option to show data in a table
+            #Option to show data in a table
             RawD = st.checkbox("Show raw data", key="raw-data-R")
             response_df = heatmap.heatmapResponse()
             if RawD:
@@ -118,7 +119,7 @@ if "data" in st.session_state:
                 st.write(" The credible interval can be chosen below, which is the range containing a particular percentage of probable values (shadowed in gray), e.g. for the 90% "
                     "credible interval, the range containing the 90% of the values is shown. The bottom of the range or lower bound (red vertical line), the median (black vertical "
                     "line) and the top of the range or upper bound (blue vertical line) are shown.")
-                   #User input option to specify credible interval for ECDF
+                #User input option to specify credible interval for ECDF
                 cred_inter = st.number_input('Credible interval', value=90)
                 st.caption("90% credible interval shown by default")
                 # Option to show data in a table

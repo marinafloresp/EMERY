@@ -28,7 +28,6 @@ st.set_page_config(
 )
 
 add_logo()
-
 sideBar()
 st.header("Home")
 st.write("---")

@@ -203,7 +203,7 @@ def ecdf(data,intervals):
     pct_val = pd.DataFrame({'x': np.round(pct_val,3), 'y': intervals})
     return pct, pct_val
 
-#Applies ECDF for samples in a chosen disease-cluster interaction (disease-Cluster interaction-Selected interaction page)
+#Applies ECDF for samples in a chosen disease-cluster interaction (disease-Cluster interaction-Selected interaction page) and applies PDF to be plotted
 def ecdf_interaction(data,disease,cluster,RawD, cred_inter):
     intervals = [50 - round(cred_inter/2), 50, 50+round(cred_inter/2)]
     disease_index = data.disease_types.index(disease)

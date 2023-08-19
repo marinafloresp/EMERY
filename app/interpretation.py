@@ -333,6 +333,7 @@ class DEA():
                     "Expression level of transcript {}".format(transcript), "DEA_" + transcript)
         st.caption("The x-axis represents the two groups being compared. The y-axis is the expression level of the chosen transcript.")
 
+    # Function to perform DEA between samples in an two different interactions
     def diffAnalysis_adv(self,subgroup1, subgroup2, pthresh,logthresh):
         self.df_group1 = subgroup1
         self.df_group2 = subgroup2
@@ -351,6 +352,7 @@ class DEA():
         st.caption("The x-axis represents the magnitude of change by the log of the FC. The y-axis represents the "
                    "statistical significance by corrected p-value. ")
 
+    # Function to show the boxplot of transcript's expression values when compared between two interactions
     def boxplot_adv(self, subgroup1, subgroup2, disease1, disease2, cluster1, cluster2, transcript):
         self.df_group1 = subgroup1
         self.df_group2 = subgroup2

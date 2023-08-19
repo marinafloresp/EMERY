@@ -179,6 +179,7 @@ if "data" in st.session_state:
                 #Option to select number of top features to display
                 n_features = st.number_input('Number of features', value=5)
             transc = feat_inter.filterSamples(transcripts, responses)
+            #Option to select a sample for local explanations
             sample = st.selectbox("Select a sample", transc, key="sample")
             # Option to select the local MA method to use
             st.write("#### Select a local method to use.")
