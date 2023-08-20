@@ -236,6 +236,8 @@ def ecdf_interaction(data,disease,cluster,RawD, cred_inter):
         plt.axvline(median, color='black', linestyle='--', label='Median')
         plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.30), borderaxespad=0,ncol=2,)
         plt.title(label = "PDF for "+ disease + "*" + str(cluster)+ " interaction")
+        plt.xlabel("Probabilities")
+        plt.ylabel("Density")
         savePlot_plt(fig,"PDF")
         st.pyplot(fig)
 
